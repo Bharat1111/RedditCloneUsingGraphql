@@ -4,11 +4,12 @@ import dotenv from 'dotenv'
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
+import cors from 'cors'
+import cookieParser from "cookie-parser";
 
 import { UserResolver } from "./resolvers/user";
 import { PostResolver } from "./resolvers/post";
 import { User } from "./entity/User";
-import cookieParser from "cookie-parser";
 import { Post } from "./entity/Post";
 import { SubResolver } from "./resolvers/subs";
 import { Sub } from "./entity/Sub";
@@ -29,6 +30,12 @@ const main = async () => {
   const app = express();
 
   app.use(cookieParser())
+  app.use(
+    cors({
+      origin: "http://localhost:3000",
+      credentials: true,
+    })
+  );
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
