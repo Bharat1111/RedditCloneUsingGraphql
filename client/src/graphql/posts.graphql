@@ -1,0 +1,14 @@
+query GetPosts {
+    getPosts {
+    id
+    identifier
+    title
+    slug
+    body
+    subName
+    username
+    createdAt
+    commentCount
+    voteScore
+  }
+}

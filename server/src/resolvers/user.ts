@@ -11,9 +11,7 @@ import {
   Resolver,
 } from "type-graphql";
 import { getConnection } from "typeorm";
-import jwt from "jsonwebtoken";
 import { MyContext } from "src/types";
-// import cookie from 'cookie'
 
 @InputType()
 class UserInput {
@@ -45,40 +43,25 @@ class UserResponse {
 @Resolver()
 export class UserResolver {
   @Query(() => User, { nullable: true })
-  async me(@Ctx() { res, req }: MyContext) {
+  async me(@Ctx() { req }: MyContext) {
     try {
-      const token = req.cookies.qid;
-
-      if (!token) {
-        return null;
-      }
-
-      const { username }: any = jwt.verify(
-        token,
-        "kahdoih3i2boichdibiooy09kjvcbjchsihi"
-      );
+      const userId = req.session.userId
+      console.log(userId)
+      if(!userId) return null
       
-      const user = await User.findOne(
-        username.includes("@")
-        ? { where: { email: username } }
-        : { where: { username: username } }
-        );
-      res.locals.user = user
-
+      const user = await User.findOne(userId);
+      
+      if(!user) return null
       return user
     } catch (error) {
       return null;
     }
   }
 
-  @Query(() => [User])
-  users() {
-    return User.find();
-  }
-
   @Mutation(() => UserResponse)
   async register(
-    @Arg("UserInput") { username, email, password }: UserInput
+    @Arg("UserInput") { username, email, password }: UserInput,
+    @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
     if (username.length <= 2) {
       return {
@@ -138,13 +121,14 @@ export class UserResolver {
           errors: [
             {
               field: "username",
-              message: "Username already taken",
+              message: "Username or Email already taken",
             },
           ],
         };
       }
     }
 
+    req.session.userId = user.id
     return { user };
   }
 
@@ -152,7 +136,7 @@ export class UserResolver {
   async login(
     @Arg("usernameOrEmail") usernameOrEmail: string,
     @Arg("password") password: string,
-    @Ctx() { res }: MyContext
+    @Ctx() { req }: MyContext
   ) {
     const user = await User.findOne(
       usernameOrEmail.includes("@")
@@ -184,46 +168,41 @@ export class UserResolver {
       };
     }
 
-    const token = jwt.sign(
-      { "username": usernameOrEmail },
-      "kahdoih3i2boichdibiooy09kjvcbjchsihi",
-      {
-        expiresIn: "7d",
-      }
-    );
+    // const token = jwt.sign(
+    //   { "username": usernameOrEmail },
+    //   "kahdoih3i2boichdibiooy09kjvcbjchsihi",
+    //   {
+    //     expiresIn: "7d",
+    //   }
+    // );
 
-    res.cookie("qid", token, {
-      httpOnly: true,
-      path: "/",
-      secure: process.env.NODE_ENV === "production",
-    });
+    // res.cookie("gvfebfdbg", user.id, {
+    //   httpOnly: true,
+    //   // path: "/",
+    //   secure: process.env.NODE_ENV === "production",
+    // });
+    req.session.userId = user.id
 
     return { user };
   }
 
   @Mutation(() => Boolean)
   logout(@Ctx() { req, res }: MyContext) {
-    // return new Promise((resolve) =>
-    //   req.cookies.destroy((err) => {
-    //     if (err) {
-    //       console.log(err);
-    //       resolve(false);
-    //       return;
-    //     }
+    if(!req.session.userId) {
+      return false
+    }
+    return new Promise((resolve) =>
 
-    //     res.clearCookie('qid');
-    //     resolve(true);
-    //   })
-    // );
-    if(!req.cookies.qid) return false
+      req.session.destroy((err: any) => {
+        if (err) {
+          console.log(err);
+          resolve(false);
+          return;
+        }
 
-    res.cookie('qid', '', {
-      httpOnly: true,
-      path: "/",
-      secure: process.env.NODE_ENV === "production",
-      expires: new Date(0)
-    })
-
-    return true;
+        res.clearCookie('qid');
+        resolve(true);
+      })
+    );
   }
 }

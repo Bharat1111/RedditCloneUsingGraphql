@@ -10,6 +10,7 @@ import {
 } from "type-graphql";
 import { getConnection, getRepository } from "typeorm";
 
+import { User } from "../entity/User";
 import { Sub } from "../entity/Sub";
 import { isAuth } from "../middlewares/isAuth";
 import { MyContext } from "../types";
@@ -30,9 +31,9 @@ export class SubResolver {
   @UseMiddleware(isAuth)
   async createSub(
     @Arg("subInput") { name, title, description }: SubInput,
-    @Ctx() { res }: MyContext
+    @Ctx() { req }: MyContext
   ) {
-    const user = res.locals.user
+    const user = await User.findOne(req.session.userId)
 
     const oldsub = await getRepository(Sub)
       .createQueryBuilder("sub")

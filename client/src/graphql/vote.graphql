@@ -1,0 +1,14 @@
+mutation Vote($voteInput: voteInput!) {
+  vote(voteInput: $voteInput) {
+    id
+    body
+    identifier
+    title
+    slug
+    subName
+    username
+    commentCount
+    voteScore
+    createdAt
+  }
+}

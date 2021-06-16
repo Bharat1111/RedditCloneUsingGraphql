@@ -6,6 +6,8 @@ import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
 import cors from 'cors'
 import cookieParser from "cookie-parser";
+import session from 'express-session'
+import connectRedis from 'connect-redis'
 
 import { UserResolver } from "./resolvers/user";
 import { PostResolver } from "./resolvers/post";
@@ -14,6 +16,9 @@ import { Post } from "./entity/Post";
 import { SubResolver } from "./resolvers/subs";
 import { Sub } from "./entity/Sub";
 import { Comment } from "./entity/Comment";
+import { redis } from "./redis";
+import { Vote } from "./entity/Vote";
+import { VoteResolver } from "./resolvers/vote";
 
 dotenv.config()
 const main = async () => {
@@ -25,8 +30,10 @@ const main = async () => {
     logging: true,
     synchronize: true,
     // migrations: [path.join(__dirname, "./migrations/*")],
-    entities: [User, Post, Sub, Comment],
+    entities: [User, Post, Sub, Comment, Vote],
   });
+
+  const RedisStore = connectRedis(session);
   const app = express();
 
   app.use(cookieParser())
@@ -37,9 +44,26 @@ const main = async () => {
     })
   );
 
+  app.use(session({
+    store: new RedisStore({
+      client: redis,
+      disableTouch: true,
+    }),
+    name: 'qid',
+    secret: "aslkdfjoiq12312",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: false,
+      maxAge: 1000 * 60 * 60 * 24 * 7 * 365, // 7 years
+      sameSite: "lax",
+    },
+  }))
+
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver, PostResolver, SubResolver],
+      resolvers: [UserResolver, PostResolver, SubResolver, VoteResolver],
       validate: false,
     }),
     context: ({ req, res }) => ({ req, res })

@@ -12,6 +12,7 @@ import { isAuth } from "../middlewares/isAuth";
 import { Post } from "../entity/Post";
 import { Sub } from "../entity/Sub";
 import { Comment } from "../entity/Comment";
+import { User } from "../entity/User";
 
 @Resolver()
 export class PostResolver {
@@ -19,6 +20,7 @@ export class PostResolver {
   getPosts() {
     return Post.find({
       order: { createdAt: "DESC" },
+      relations: ['comments', 'votes', 'sub']
     });
   }
 
@@ -37,9 +39,10 @@ export class PostResolver {
     @Arg("title") title: string,
     @Arg("body") body: string,
     @Arg("sub") sub: string,
-    @Ctx() { res }: MyContext
+    @Ctx() { req }: MyContext
   ) {
-    const user = res.locals.user;
+    const userId = req.session.userId;
+    const user = await User.findOne(userId)
 
     const subRecord = await Sub.findOneOrFail({ name: sub });
 
@@ -52,17 +55,19 @@ export class PostResolver {
     @Arg("body") body: string,
     @Arg("identifier") identifier: string,
     @Arg("slug") slug: string,
-    @Ctx() { res }: MyContext
+    @Ctx() { req }: MyContext
   ) {
     const post = await Post.findOneOrFail({ identifier, slug });
     if (!post) {
       throw new Error("Post doesn't exists");
     }
 
+    const user = await User.findOne(req.session.userId)
+
     const comment = await Comment.create({
       body,
       post: post,
-      user: res.locals.user,
+      user,
     }).save();
 
     return comment;
