@@ -56,18 +56,20 @@ export class Post extends BaseEntity {
   @JoinColumn({ name: 'subName', referencedColumnName: 'name' })
   sub: Sub
 
-  @OneToMany(() => Comment, (comment) => comment.post)
+  @Field(() => [Comment], { nullable: true })
+  @OneToMany(() => Comment, (comment) => comment.post, { eager: true })
   comments: Comment[]
-
-  @OneToMany(() => Vote, (vote) => vote.post)
+  
+  @Field(() => [Vote], { nullable: true })
+  @OneToMany(() => Vote, (vote) => vote.post, { eager: true })
   votes: Vote[]
 
-  @Field()
+  @Field({ defaultValue: 0 })
   get commentCount(): number {
     return this.comments?.length
   }
   
-  @Field()
+  @Field({ defaultValue: 0 })
   get voteScore(): number {
     return this.votes?.reduce((prev, curr) => prev + (curr.value || 0), 0)
   }

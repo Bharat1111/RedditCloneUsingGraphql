@@ -10,6 +10,7 @@ import { redis } from "./redis";
 import { PostResolver } from "./resolvers/post";
 import { SubPageResolver } from "./resolvers/subs";
 import { VoteResolver } from "./resolvers/votes";
+import { createCommentLoader } from "./utils/createCommentLoader";
 
 const main = async () => {
   await createConnection();
@@ -22,7 +23,7 @@ const main = async () => {
       resolvers: [UserResolver, PostResolver, SubPageResolver, VoteResolver],
       validate: false,
     }),
-    context: ({ req, res }) => ({ req, res })
+    context: ({ req, res }) => ({ req, res, commentLoader: createCommentLoader() })
   })
 
   app.use(session({

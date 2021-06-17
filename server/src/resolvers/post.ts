@@ -1,4 +1,13 @@
-import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from "type-graphql";
+import {
+  Arg,
+  Ctx,
+  Field,
+  Mutation,
+  ObjectType,
+  Query,
+  Resolver,
+  UseMiddleware,
+} from "type-graphql";
 
 import { Post } from "../entities/Post";
 import { User } from "../entities/User";
@@ -6,14 +15,42 @@ import { Sub } from "../entities/Sub";
 import { MyContext } from "../types";
 import { isAuth } from "../utils/isAuth";
 import { Comment } from "../entities/Comment";
+import { getRepository } from "typeorm";
+// import { Connection } from "typeorm";
+
+@ObjectType()
+class CountsResponse {
+  @Field()
+  comments: number
+  @Field()
+  voteScore: number
+}
 
 @Resolver()
 export class PostResolver {
+  // @FieldResolver(() => Comment)
+  // async comments(
+  //   @Root() comment: Comment,
+  //   @Ctx() { commentLoader }: MyContext
+  // ) {
+  //   return commentLoader.load(comment.postId)
+  // }
+
   @Query(() => [Post])
-  getPosts() {
-    return Post.find({
-      order: { createdAt: "DESC" },
-    });
+  async getPosts() {
+
+    // const users = await connection
+    // .getRepository(User)
+    // .createQueryBuilder("user")
+    // .leftJoinAndSelect("user.photos", "photo")
+    // .getMany();
+    // const userRepository = getRepository(User);
+    // const users = await userRepository.find({ relations: ["photos"] });
+
+    const postRepository = await getRepository(Post);
+
+    const questions = await postRepository.find();
+    return questions
   }
 
   @Query(() => Post, { nullable: true })
@@ -25,6 +62,16 @@ export class PostResolver {
       return Post.findOneOrFail({ identifier, slug });
     } catch (error) {
       return null;
+    }
+  }
+
+  @Query(() => CountsResponse)
+  async getCounts(@Arg("identifier") identifier: string, @Arg("slug") slug: string) {
+    try {
+      const post =await Post.findOneOrFail({ identifier, slug });
+      return { comments: post.commentCount, voteScore: post.voteScore }
+    } catch (error) {
+      throw new Error("Post doesn't exists");
     }
   }
 
@@ -41,7 +88,7 @@ export class PostResolver {
 
     const subRecord = await Sub.findOneOrFail({ name: sub });
 
-    return Post.create({ body, title, user, sub: subRecord }).save()
+    return Post.create({ body, title, user, sub: subRecord }).save();
   }
 
   @Mutation(() => Comment)
@@ -57,7 +104,7 @@ export class PostResolver {
       throw new Error("Post doesn't exists");
     }
 
-    const user = await User.findOne(req.session.userId)
+    const user = await User.findOne(req.session.userId);
 
     const comment = await Comment.create({
       body,

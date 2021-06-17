@@ -9,14 +9,12 @@ import {
   JoinColumn,
   ManyToOne,
   BeforeInsert,
-  OneToMany,
-//   OneToMany,
+  // OneToMany,
 } from "typeorm";
 
 import { Post } from "./Post";
 import { User } from "./User";
 import { makeId } from "../utils/helper";
-import { Vote } from "./Vote";
 // import { Vote } from "./Vote";
 
 @ObjectType()
@@ -47,17 +45,16 @@ export class Comment extends BaseEntity {
   user: User;
   
   @ManyToOne(() => Post, (post) => post.comments, { nullable: false })
-  @JoinColumn({ name: "postId", referencedColumnName: "id" })
   post: Post
 
-  @OneToMany(() => Vote, (vote) => vote.comment)
-  votes: Vote[]
+  // @OneToMany(() => Vote, (vote) => vote.comment)
+  // votes: Vote[]
 
-  protected userVote: number
-  setUserVote(user: User) {
-    const index = this.votes?.findIndex(v => v.username === user.username)
-    this.userVote = index > -1 ? this.votes[index].value : 0
-  }
+  // protected userVote: number
+  // setUserVote(user: User) {
+  //   const index = this.votes?.findIndex(v => v.username === user.username)
+  //   this.userVote = index > -1 ? this.votes[index].value : 0
+  // }
 
   @Field(() => String)
   @CreateDateColumn()

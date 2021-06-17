@@ -9,7 +9,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Comment } from "./Comment";
+// import { Comment } from "./Comment";
 
 import { Post } from "./Post";
 import { User } from "./User";
@@ -33,9 +33,9 @@ export class Vote extends BaseEntity {
   @Column()
   postId: string;
 
-  @Field()
-  @Column({ nullable: true })
-  commentId: string;
+  // @Field()
+  // @Column({ nullable: true })
+  // commentId: string;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: "username", referencedColumnName: "username" })
@@ -45,9 +45,9 @@ export class Vote extends BaseEntity {
   @JoinColumn({ name: "postId", referencedColumnName: "id" })
   post: Post;
   
-  @ManyToOne(() => Comment, { nullable: true })
-  @JoinColumn({ name: "commentId", referencedColumnName: "id" })
-  comment: Comment;
+  // @ManyToOne(() => Comment, { nullable: true })
+  // @JoinColumn({ name: "commentId", referencedColumnName: "id" })
+  // comment: Comment;
 
   @Field(() => String)
   @CreateDateColumn()
