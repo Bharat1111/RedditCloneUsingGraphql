@@ -1,18 +1,11 @@
-import {
-  Arg,
-  Ctx,
-  Mutation,
-  Query,
-  Resolver,
-  UseMiddleware,
-} from "type-graphql";
+import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from "type-graphql";
 
+import { Post } from "../entities/Post";
+import { User } from "../entities/User";
+import { Sub } from "../entities/Sub";
 import { MyContext } from "../types";
-import { isAuth } from "../middlewares/isAuth";
-import { Post } from "../entity/Post";
-import { Sub } from "../entity/Sub";
-import { Comment } from "../entity/Comment";
-import { User } from "../entity/User";
+import { isAuth } from "../utils/isAuth";
+import { Comment } from "../entities/Comment";
 
 @Resolver()
 export class PostResolver {
@@ -20,16 +13,18 @@ export class PostResolver {
   getPosts() {
     return Post.find({
       order: { createdAt: "DESC" },
-      relations: ['comments', 'votes', 'sub']
     });
   }
 
-  @Query(() => Post)
-  getPost(@Arg("identifier") identifier: string, @Arg("slug") slug: string) {
+  @Query(() => Post, { nullable: true })
+  async getPost(
+    @Arg("identifier") identifier: string,
+    @Arg("slug") slug: string
+  ) {
     try {
       return Post.findOneOrFail({ identifier, slug });
-    } catch (err) {
-      throw new Error("No post exists");
+    } catch (error) {
+      return null;
     }
   }
 
@@ -42,16 +37,16 @@ export class PostResolver {
     @Ctx() { req }: MyContext
   ) {
     const userId = req.session.userId;
-    const user = await User.findOne(userId)
+    const user = await User.findOne(userId);
 
     const subRecord = await Sub.findOneOrFail({ name: sub });
 
-    return Post.create({ body, title, sub: subRecord, user }).save();
+    return Post.create({ body, title, user, sub: subRecord }).save()
   }
 
   @Mutation(() => Comment)
   @UseMiddleware(isAuth)
-  async commentOnPost(
+  async createComment(
     @Arg("body") body: string,
     @Arg("identifier") identifier: string,
     @Arg("slug") slug: string,
@@ -66,7 +61,7 @@ export class PostResolver {
 
     const comment = await Comment.create({
       body,
-      post: post,
+      post,
       user,
     }).save();
 

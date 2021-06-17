@@ -1,6 +1,8 @@
 import Link from 'next/link'
 
-const Navbar = () => (
+const Navbar = () => {
+
+return (
     <div className="bg-white fixed inset-x-0 top-0 z-10 flex px-5 items-center justify-center h-12">
         {/* title */}
         {/* <Image src='http://svgshare.com/i/2SL.svg' width='100' height='100' /> */}
@@ -28,6 +30,6 @@ const Navbar = () => (
           </Link>
         </div>
       </div>
-)
+)}
 
 export default Navbar

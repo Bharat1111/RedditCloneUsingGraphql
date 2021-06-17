@@ -25,20 +25,30 @@ export class Vote extends BaseEntity {
   @Column()
   value: number;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: "username", referencedColumnName: "username" })
-  user: User;
-
   @Field()
   @Column()
   username: string;
 
-  @ManyToOne(() => Post, {nullable: true})
-  post: Post;
+  @Field()
+  @Column()
+  postId: string;
 
-  @ManyToOne(() => Comment, {nullable: true})
-  comment: Comment;
+  @Field()
+  @Column({ nullable: true })
+  commentId: string;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: "username", referencedColumnName: "username" })
+  user: User;
   
+  @ManyToOne(() => Post, { nullable: true })
+  @JoinColumn({ name: "postId", referencedColumnName: "id" })
+  post: Post;
+  
+  @ManyToOne(() => Comment, { nullable: true })
+  @JoinColumn({ name: "commentId", referencedColumnName: "id" })
+  comment: Comment;
+
   @Field(() => String)
   @CreateDateColumn()
   createdAt: Date;

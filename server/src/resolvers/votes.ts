@@ -9,12 +9,12 @@ import {
     UseMiddleware
 } from "type-graphql";
 
-import { Comment } from "../entity/Comment";
-import { Post } from "../entity/Post";
-import { User } from "../entity/User";
-import { Vote } from "../entity/Vote";
+import { Comment } from "../entities/Comment";
+import { Post } from "../entities/Post";
+import { User } from "../entities/User";
+import { Vote } from "../entities/Vote";
 import { MyContext } from "../types";
-import { isAuth } from "../middlewares/isAuth";
+import { isAuth } from "../utils/isAuth";
 // import { Sub } from "../entity/Sub";
 
 @InputType()
@@ -28,21 +28,6 @@ class voteInput {
     @Field()
     value: number
 }
-
-
-// @ObjectType()
-// class VotePost {
-// //   @Field(() => Post)
-// //   post: Post;
-// //   @Field(() => Post)
-// //   post: Post
-//   @Field(() => [Comment])
-//   comments: Comment[];
-//   @Field(() => Sub)
-//   sub: Sub;
-//   @Field(() => [Vote])
-//   votes: Vote[];
-// }
 
 @Resolver()
 export class VoteResolver {
@@ -76,10 +61,10 @@ export class VoteResolver {
 
         if(!vote && value === 0) {
             // if no vote and value = 0 return error
-            throw new Error('Vote not found') 
+            throw new Error("You can't vote nothing")
         } else if (!vote) {
             if(comment)
-            vote = await Vote.create({ user, value, comment }).save()
+            vote = await Vote.create({ user, value, comment, post }).save()
             else
             vote = await Vote.create({ user, value, post }).save()
         } else if(value === 0) {

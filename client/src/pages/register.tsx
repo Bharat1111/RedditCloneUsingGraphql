@@ -1,10 +1,8 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState } from "react";
-import { useRegisterMutation } from "../generated/graphql";
 import { useRouter } from "next/router";
 import classNames from "classnames";
-import { withApollo } from "../utils/withApollo";
 
 const Register = () => {
   const [input, setInput] = useState({
@@ -15,21 +13,19 @@ const Register = () => {
   const [agreement, setAgreement] = useState(false);
   const router = useRouter();
 
-  const [register] = useRegisterMutation();
-
   let error = {};
   const submit = async (e) => {
     e.preventDefault();
 
-    const response = await register({
-      variables: { UserInput: input },
-    });
+    // const response = await register({
+    //   variables: { UserInput: input },
+    // });
 
-    if (response.data?.register.errors) {
-      error = response.data?.register.errors;
-    } else if (response.data?.register.user) {
-      router.push("/");
-    }
+    // if (response.data?.register.errors) {
+    //   error = response.data?.register.errors;
+    // } else if (response.data?.register.user) {
+    //   router.push("/");
+    // }
   };
 
   return (
@@ -124,4 +120,4 @@ const Register = () => {
   );
 }
 
-export default withApollo({ ssr: false })(Register)
+export default Register

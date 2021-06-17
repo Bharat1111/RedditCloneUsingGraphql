@@ -1,57 +1,56 @@
 import {
-  Entity as TOEntity,
-  Column,
-  BeforeInsert,
-  ManyToOne,
   BaseEntity,
-  PrimaryGeneratedColumn,
+  BeforeInsert,
+  Column,
   CreateDateColumn,
-  UpdateDateColumn,
+  Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
-} from 'typeorm'
-import { Field, ObjectType } from 'type-graphql'
-
-import { User } from './User'
-import { makeId, slugify } from '../utils/helper'
-import { Sub } from './Sub'
-import { Comment } from './Comment'
-import { Vote } from './Vote'
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
+import { Field, ObjectType } from "type-graphql";
+import { makeId, slugify } from "../utils/helper";
+import { User } from "./User";
+import { Sub } from "./Sub";
+import { Comment } from "./Comment";
+import { Vote } from "./Vote";
 
 @ObjectType()
-@TOEntity('posts')
+@Entity("posts")
 export class Post extends BaseEntity {
   @Field()
-  @PrimaryGeneratedColumn()
-  id: number
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
 
   @Field()
   @Column()
-  identifier: string // 7 Character Id
+  identifier: string; // 7 Character Id
 
   @Field()
   @Column()
-  title: string
+  title: string;
 
   @Field()
   @Column({ nullable: true })
-  slug: string
+  slug: string;
 
   @Field()
-  @Column({ nullable: true, type: 'text' })
-  body: string
-
-  @Field()
-  @Column()
-  subName: string
+  @Column({ nullable: true, type: "text" })
+  body: string;
 
   @Field()
   @Column()
-  username: string
+  subName: string;
+
+  @Field()
+  @Column()
+  username: string;
 
   @ManyToOne(() => User, (user) => user.posts)
   @JoinColumn({ name: 'username', referencedColumnName: 'username' })
-  user: User
+  user: User;
 
   @ManyToOne(() => Sub, (sub) => sub.posts)
   @JoinColumn({ name: 'subName', referencedColumnName: 'name' })
@@ -59,7 +58,7 @@ export class Post extends BaseEntity {
 
   @OneToMany(() => Comment, (comment) => comment.post)
   comments: Comment[]
-  
+
   @OneToMany(() => Vote, (vote) => vote.post)
   votes: Vote[]
 
@@ -89,7 +88,7 @@ export class Post extends BaseEntity {
 
   @BeforeInsert()
   makeIdAndSlug() {
-    this.identifier = makeId(7)
-    this.slug = slugify(this.title)
+    this.identifier = makeId(7);
+    this.slug = slugify(this.title);
   }
 }

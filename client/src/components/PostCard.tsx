@@ -1,49 +1,46 @@
 import Link from "next/link";
 import { Fragment, useState } from "react";
 import moment from "moment";
-import { Post, useVoteMutation } from "../generated/graphql";
 
 // interface PostCardProps {
 //     post: Post
 // }
 
 export default function PostCard({ post }) {
-  const [vote, { error }] = useVoteMutation();
-  error && <div>{error}</div>;
   return (
     <div key={post.identifier} className="flex mb-4 bg-white rounded">
       {/* Vote Section */}
       <div className="w-10 py-3 text-center bg-gray-200 rounded-1">
         <div className="w-6 mx-auto text-gray-400 rounded cursor-pointer hover:bg-gray-300 hover:text-red-500">
           <i
-            onClick={async () => {
-              await vote({
-                variables: {
-                  voteInput: {
-                    identifier: post.identifier,
-                    slug: post.slug,
-                    value: 1,
-                  },
-                },
-              });
-            }}
+            // onClick={async () => {
+            //   await vote({
+            //     variables: {
+            //       voteInput: {
+            //         identifier: post.identifier,
+            //         slug: post.slug,
+            //         value: 1,
+            //       },
+            //     },
+            //   });
+            // }}
             className="fas fa-arrow-up"
           ></i>
         </div>
         <p className="text-xs font-bold">{post.voteScore}</p>
         <div className="w-6 mx-auto text-gray-400 rounded cursor-pointer hover:bg-gray-300 hover:text-blue-500">
           <i
-            onClick={async () => {
-              await vote({
-                variables: {
-                  voteInput: {
-                    identifier: post.identifier,
-                    slug: post.slug,
-                    value: -1,
-                  },
-                },
-              });
-            }}
+            // onClick={async () => {
+            //   await vote({
+            //     variables: {
+            //       voteInput: {
+            //         identifier: post.identifier,
+            //         slug: post.slug,
+            //         value: -1,
+            //       },
+            //     },
+            //   });
+            // }}
             className="fas fa-arrow-down"
           ></i>
         </div>

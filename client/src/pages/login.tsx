@@ -1,10 +1,8 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState } from "react";
-import { MeDocument, MeQuery, useLoginMutation } from "../generated/graphql";
 import { useRouter } from "next/router";
 import classNames from "classnames";
-import { withApollo } from "../utils/withApollo";
 
 const Login: React.FC<{}> = ({}) => {
   const [input, setInput] = useState({
@@ -13,34 +11,32 @@ const Login: React.FC<{}> = ({}) => {
   });
   const router = useRouter();
 
-  const [login] = useLoginMutation();
-
   let error = {};
   const submit = async (e) => {
     e.preventDefault();
 
-    const response = await login({
-      variables: {
-        usernameOrEmail: input.usernameOrEmail,
-        password: input.password,
-      },
-      update: (cache, { data }) => {
-        cache.writeQuery<MeQuery>({
-          query: MeDocument,
-          data: {
-            __typename: "Query",
-            me: data?.login.user,
-          },
-        });
-      },
-    });
+    // const response = await login({
+    //   variables: {
+    //     usernameOrEmail: input.usernameOrEmail,
+    //     password: input.password,
+    //   },
+      // update: (cache, { data }) => {
+      //   cache.writeQuery<MeQuery>({
+      //     query: MeDocument,
+      //     data: {
+      //       __typename: "Query",
+      //       me: data?.login.user,
+      //     },
+      //   });
+      // },
+    // });
 
-    if (response.data?.login.errors) {
-      return;
-    } else if (response.data?.login.user) {
-      console.log('login', response.data)
-      router.push("/");
-    }
+    // if (response.data?.login.errors) {
+    //   return;
+    // } else if (response.data?.login.user) {
+    //   // console.log('login', response.data)
+    //   router.push("/");
+    // }
   };
 
   return (
@@ -106,4 +102,4 @@ const Login: React.FC<{}> = ({}) => {
   );
 };
 
-export default withApollo({ ssr: false })(Login);
+export default Login

@@ -1,10 +1,8 @@
-import { Request, Response } from 'express';
+import { Request, Response } from "express";
 
 export interface MyContext {
-    req: Request & {
-        session: {
-          userId?: any;
-        };
-    }
+    req: Request & { session: {
+        userId: any
+    }};
     res: Response;
 }

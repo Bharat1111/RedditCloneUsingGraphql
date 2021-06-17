@@ -10,19 +10,21 @@ import {
   ManyToOne,
   BeforeInsert,
   OneToMany,
+//   OneToMany,
 } from "typeorm";
 
 import { Post } from "./Post";
 import { User } from "./User";
 import { makeId } from "../utils/helper";
 import { Vote } from "./Vote";
+// import { Vote } from "./Vote";
 
 @ObjectType()
 @Entity("comments")
 export class Comment extends BaseEntity {
   @Field()
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Field()
   @Column()
@@ -35,12 +37,17 @@ export class Comment extends BaseEntity {
   @Field()
   @Column()
   username: string;
+  
+  @Field()
+  @Column()
+  postId: string;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: "username", referencedColumnName: "username" })
   user: User;
-
+  
   @ManyToOne(() => Post, (post) => post.comments, { nullable: false })
+  @JoinColumn({ name: "postId", referencedColumnName: "id" })
   post: Post
 
   @OneToMany(() => Vote, (vote) => vote.comment)

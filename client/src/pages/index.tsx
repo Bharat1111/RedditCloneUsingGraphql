@@ -3,15 +3,13 @@ import Link from "next/link";
 import { Fragment } from "react";
 import moment from "moment";
 
-import { useGetPostsQuery } from "../generated/graphql";
 import PostCard from "../components/PostCard";
-import { withApollo } from "../utils/withApollo";
+import Navbar from '../components/Navbar'
 
 const Home = () => {
-  const { data, loading } = useGetPostsQuery();
-  // console.log(data?.getPosts);
-
   return (
+    <>
+    <Navbar />
     <div className="pt-12">
       <Head>
         <title>Reddit App</title>
@@ -22,24 +20,25 @@ const Home = () => {
       <div className="container pt-4 flex">
         {/* Posts */}
         <div className="w-160">
-          {loading ? (
-            <div>Loading...</div>
-          ) : !data ? (
-            <div>No Posts</div>
-          ) : (
+          {/* {loading ? ( */}
+            {/* <div>Loading...</div> */}
+          {/* ) : !data ? ( */}
+            {/* <div>No Posts</div> */}
+          {/* ) : ( */}
             <>
-              <div>
+              {/* <div>
                 {data.getPosts.map((post) => (
                   <PostCard post={post} />
                 ))}
-              </div>
+              </div> */}
             </>
-          )}
+          {/* )} */}
         </div>
         {/* Sidebar */}
       </div>
     </div>
+    </>
   );
 }
 
-export default withApollo({ ssr: false })(Home)
+export default Home

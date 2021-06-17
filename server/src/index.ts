@@ -1,48 +1,29 @@
-import "reflect-metadata";
-import express from "express";
-import dotenv from 'dotenv'
+import { createConnection } from "typeorm"
+import express from 'express'
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
-import { createConnection } from "typeorm";
-import cors from 'cors'
-import cookieParser from "cookie-parser";
-import session from 'express-session'
+import session from "express-session";
 import connectRedis from 'connect-redis'
 
 import { UserResolver } from "./resolvers/user";
-import { PostResolver } from "./resolvers/post";
-import { User } from "./entity/User";
-import { Post } from "./entity/Post";
-import { SubResolver } from "./resolvers/subs";
-import { Sub } from "./entity/Sub";
-import { Comment } from "./entity/Comment";
 import { redis } from "./redis";
-import { Vote } from "./entity/Vote";
-import { VoteResolver } from "./resolvers/vote";
+import { PostResolver } from "./resolvers/post";
+import { SubPageResolver } from "./resolvers/subs";
+import { VoteResolver } from "./resolvers/votes";
 
-dotenv.config()
 const main = async () => {
-  await createConnection({
-    type: "postgres",
-    database: "redditclone",
-    username: "postgres",
-    password: "lsg@11_",
-    logging: true,
-    synchronize: true,
-    // migrations: [path.join(__dirname, "./migrations/*")],
-    entities: [User, Post, Sub, Comment, Vote],
-  });
+  await createConnection();
 
-  const RedisStore = connectRedis(session);
-  const app = express();
+  const app = express()
+  const RedisStore = connectRedis(session)
 
-  app.use(cookieParser())
-  app.use(
-    cors({
-      origin: "http://localhost:3000",
-      credentials: true,
-    })
-  );
+  const apolloServer = new ApolloServer({
+    schema: await buildSchema({
+      resolvers: [UserResolver, PostResolver, SubPageResolver, VoteResolver],
+      validate: false,
+    }),
+    context: ({ req, res }) => ({ req, res })
+  })
 
   app.use(session({
     store: new RedisStore({
@@ -50,34 +31,21 @@ const main = async () => {
       disableTouch: true,
     }),
     name: 'qid',
-    secret: "aslkdfjoiq12312",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: false,
-      maxAge: 1000 * 60 * 60 * 24 * 7 * 365, // 7 years
-      sameSite: "lax",
-    },
+      secret: "aslkdfjoiq12312",
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        httpOnly: true,
+        secure: false,
+        maxAge: 1000 * 60 * 60 * 24 * 7 * 365, // 7 years
+        sameSite: "lax",
+      },
   }))
+  apolloServer.applyMiddleware({ app })
 
-  const apolloServer = new ApolloServer({
-    schema: await buildSchema({
-      resolvers: [UserResolver, PostResolver, SubResolver, VoteResolver],
-      validate: false,
-    }),
-    context: ({ req, res }) => ({ req, res })
-  });
+  app.listen(3001, () => {
+    console.log('Server is running at http://localhost:3001/graphql');
+  })
+}
 
-  apolloServer.applyMiddleware({
-    app,
-  });
-
-  app.listen(process.env.PORT, () => {
-    console.log("Server started on port 3001");
-  });
-};
-
-main().catch((err) => {
-  console.log(err);
-});
+main().catch(err => console.log(err))
