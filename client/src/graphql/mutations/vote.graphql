@@ -1,0 +1,3 @@
+mutation Vote($identifier: String!, $slug: String!, $value: Float!) {
+  vote(voteInput: { identifier: $identifier, slug: $slug, value: $value })
+}

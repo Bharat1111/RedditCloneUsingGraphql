@@ -3,8 +3,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import classNames from "classnames";
+import { useRegisterMutation } from "../generated/graphql";
 
 const Register = () => {
+  const [register] = useRegisterMutation()
   const [input, setInput] = useState({
     username: "",
     email: "",
@@ -17,15 +19,13 @@ const Register = () => {
   const submit = async (e) => {
     e.preventDefault();
 
-    // const response = await register({
-    //   variables: { UserInput: input },
-    // });
+    const response = await register({
+      variables: { RegisterInput: input },
+    });
 
-    // if (response.data?.register.errors) {
-    //   error = response.data?.register.errors;
-    // } else if (response.data?.register.user) {
-    //   router.push("/");
-    // }
+    if (response.data?.register.id) {
+      router.push("/");
+    }
   };
 
   return (

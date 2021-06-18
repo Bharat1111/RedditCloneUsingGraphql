@@ -1,0 +1,29 @@
+query Posts {
+  getPosts {
+    id
+    identifier
+    slug
+    username
+    commentCount
+    voteScore
+    title
+    body
+    createdAt
+    subName
+    comments {
+      id
+      body
+      username
+      postId
+      createdAt
+    }
+    votes {
+      id
+      username
+      postId
+      value
+      VoteStatus
+      # commentId
+    }
+  }
+}

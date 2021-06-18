@@ -3,8 +3,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import classNames from "classnames";
+import { MeDocument, MeQuery, useLoginMutation } from "../generated/graphql";
 
 const Login: React.FC<{}> = ({}) => {
+  const [login] = useLoginMutation()
   const [input, setInput] = useState({
     usernameOrEmail: "",
     password: "",
@@ -15,28 +17,27 @@ const Login: React.FC<{}> = ({}) => {
   const submit = async (e) => {
     e.preventDefault();
 
-    // const response = await login({
-    //   variables: {
-    //     usernameOrEmail: input.usernameOrEmail,
-    //     password: input.password,
-    //   },
-      // update: (cache, { data }) => {
-      //   cache.writeQuery<MeQuery>({
-      //     query: MeDocument,
-      //     data: {
-      //       __typename: "Query",
-      //       me: data?.login.user,
-      //     },
-      //   });
-      // },
-    // });
+    const response = await login({
+      variables: {
+        usernameOrEmail: input.usernameOrEmail,
+        password: input.password,
+      },
+      update: (cache, { data }) => {
+        const {username, id, email, createdAt} = data?.login
+        cache.writeQuery<MeQuery>({
+          query: MeDocument,
+          data: {
+            __typename: "Query",
+            me: {username, email, createdAt,id},
+          },
+        });
+      },
+    });
 
-    // if (response.data?.login.errors) {
-    //   return;
-    // } else if (response.data?.login.user) {
-    //   // console.log('login', response.data)
-    //   router.push("/");
-    // }
+    if (response.data?.login.id) {
+      // console.log('login', response.data)
+      router.push("/");
+    }
   };
 
   return (

@@ -1,46 +1,95 @@
 import Link from "next/link";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import moment from "moment";
+import { useVoteMutation, VoteMutation } from "../generated/graphql";
+import { ApolloCache, gql } from "@apollo/client";
 
 // interface PostCardProps {
 //     post: Post
 // }
+const updateAfterVote = (
+  value: number,
+  postId,
+  cache: ApolloCache<VoteMutation>
+) => {
+  const data = cache.readFragment<{
+    id: string;
+    voteScore: number;
+    VoteStatus: number;
+  }>({
+    // Post:njsdhwiiihiobdc
+    id: "Post:" + postId,
+    fragment: gql`
+      fragment _ on Post {
+        id
+        voteScore
+      }
+    `,
+  });
+// console.log(data)
+  if (data) {
+    // if (data.votes?.VoteStatus !== 0) {
+    //   return;
+    // }
+    let newPoints
+    if(value === 1){
+      if(data.voteScore > 0) {
+        return
+      }
+    }
+    else if(value === -1) {
+      if(data.voteScore < 0) return
+    }
+    newPoints = (data.voteScore as number) + value;
+    cache.writeFragment({
+      id: 'Post:' + postId,
+      fragment: gql`
+        fragment __ on Post {
+          id
+          voteScore
+        }
+      `,
+      data: { voteScore: newPoints },
+    });
+    // console.log('data', data)
+  }
+};
 
 export default function PostCard({ post }) {
+  const [vote] = useVoteMutation()
+
   return (
     <div key={post.identifier} className="flex mb-4 bg-white rounded">
       {/* Vote Section */}
       <div className="w-10 py-3 text-center bg-gray-200 rounded-1">
         <div className="w-6 mx-auto text-gray-400 rounded cursor-pointer hover:bg-gray-300 hover:text-red-500">
           <i
-            // onClick={async () => {
-            //   await vote({
-            //     variables: {
-            //       voteInput: {
-            //         identifier: post.identifier,
-            //         slug: post.slug,
-            //         value: 1,
-            //       },
-            //     },
-            //   });
-            // }}
+            onClick={async () => {
+              await vote({
+                variables: {
+                    identifier: post.identifier,
+                    slug: post.slug,
+                    value: 1,
+                  },
+                  update: (cache) => updateAfterVote(1, post.id, cache)
+              });
+            }}
             className="fas fa-arrow-up"
           ></i>
         </div>
         <p className="text-xs font-bold">{post.voteScore}</p>
         <div className="w-6 mx-auto text-gray-400 rounded cursor-pointer hover:bg-gray-300 hover:text-blue-500">
           <i
-            // onClick={async () => {
-            //   await vote({
-            //     variables: {
-            //       voteInput: {
-            //         identifier: post.identifier,
-            //         slug: post.slug,
-            //         value: -1,
-            //       },
-            //     },
-            //   });
-            // }}
+            onClick={async () => {
+              await vote({
+                variables: {
+                    identifier: post.identifier,
+                    slug: post.slug,
+                    value: -1,
+                },
+                update: (cache) => updateAfterVote(-1, post.id, cache)
+              });
+            }}
             className="fas fa-arrow-down"
           ></i>
         </div>

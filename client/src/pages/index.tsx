@@ -1,12 +1,11 @@
 import Head from "next/head";
-import Link from "next/link";
-import { Fragment } from "react";
-import moment from "moment";
 
 import PostCard from "../components/PostCard";
 import Navbar from '../components/Navbar'
+import { usePostsQuery } from "../generated/graphql";
 
 const Home = () => {
+  const { data, loading } = usePostsQuery()
   return (
     <>
     <Navbar />
@@ -20,19 +19,19 @@ const Home = () => {
       <div className="container pt-4 flex">
         {/* Posts */}
         <div className="w-160">
-          {/* {loading ? ( */}
-            {/* <div>Loading...</div> */}
-          {/* ) : !data ? ( */}
-            {/* <div>No Posts</div> */}
-          {/* ) : ( */}
+          {loading ? (
+            <div>Loading...</div>
+          ) : !data ? ( 
+            <div>No Posts</div>
+          ) : (
             <>
-              {/* <div>
+              <div>
                 {data.getPosts.map((post) => (
-                  <PostCard post={post} />
+                  <PostCard key={post.id} post={post} />
                 ))}
-              </div> */}
+              </div>
             </>
-          {/* )} */}
+          )}
         </div>
         {/* Sidebar */}
       </div>
@@ -41,4 +40,4 @@ const Home = () => {
   );
 }
 
-export default Home
+export default (Home)

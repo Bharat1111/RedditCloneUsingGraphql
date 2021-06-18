@@ -33,6 +33,10 @@ export class Vote extends BaseEntity {
   @Column()
   postId: string;
 
+  @Field()
+  @Column({ default: 0 })
+  VoteStatus: number
+
   // @Field()
   // @Column({ nullable: true })
   // commentId: string;

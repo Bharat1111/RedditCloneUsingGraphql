@@ -4,6 +4,7 @@ import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import session from "express-session";
 import connectRedis from 'connect-redis'
+import cors from 'cors'
 
 import { UserResolver } from "./resolvers/user";
 import { redis } from "./redis";
@@ -26,6 +27,12 @@ const main = async () => {
     context: ({ req, res }) => ({ req, res, commentLoader: createCommentLoader() })
   })
 
+  const corsOptions = {
+    origin: 'http://localhost:3000',
+    credentials: true // <-- REQUIRED backend setting
+  };
+  app.use(cors(corsOptions));
+
   app.use(session({
     store: new RedisStore({
       client: redis,
@@ -42,7 +49,7 @@ const main = async () => {
         sameSite: "lax",
       },
   }))
-  apolloServer.applyMiddleware({ app })
+  apolloServer.applyMiddleware({ app, cors: false })
 
   app.listen(3001, () => {
     console.log('Server is running at http://localhost:3001/graphql');

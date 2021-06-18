@@ -1,0 +1,8 @@
+mutation Register($RegisterInput: RegisterInput!) {
+  register(RegisterInput: $RegisterInput) {
+    username
+    id
+    email
+    createdAt
+  }
+}

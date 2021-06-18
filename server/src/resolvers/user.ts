@@ -16,9 +16,12 @@ class RegisterInput {
 
 @Resolver()
 export class UserResolver {
-  @Query(() => String)
-  hello() {
-    return "hello";
+  @Query(() => User, { nullable: true })
+  me(@Ctx() { req }: MyContext) {
+    if(req.session.userId)
+    return User.findOne(req.session.userId)
+
+    return null
   }
 
   @Mutation(() => User, { nullable: true })

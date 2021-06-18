@@ -53,7 +53,8 @@ export class VoteResolver {
       // if no vote and value = 0 return error
       throw new Error("You can't vote 'nothing'");
     } else if (!vote) {
-      vote = await Vote.create({ user, value, post }).save();
+      // if user has not votes earlier add his vote
+      vote = await Vote.create({ user, value, post, VoteStatus: value }).save();
     } else if (value === 0) {
       // vote exists remove vote from table
       await vote.remove();
