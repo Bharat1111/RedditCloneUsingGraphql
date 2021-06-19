@@ -7,6 +7,9 @@ import {
   Query,
   Resolver,
   UseMiddleware,
+  FieldResolver,
+  Int,
+  Root
 } from "type-graphql";
 
 import { Post } from "../entities/Post";
@@ -26,8 +29,22 @@ class CountsResponse {
   voteScore: number
 }
 
-@Resolver()
+@Resolver(Post)
 export class PostResolver {
+  @FieldResolver(() => Int, { nullable: true })
+  async voteStatus(
+    @Root() post: Post,
+    @Ctx() { commentLoader, req }: MyContext
+  ) {
+    if(!req.session.userId) {
+      return null
+    }
+    const user = User.findOne(req.session.userId)
+
+    const updoot = await commentLoader.load({postId: post.id, user }) 
+
+    return updoot ? updoot.value : null
+  }
   // @FieldResolver(() => Comment)
   // async comments(
   //   @Root() comment: Comment,

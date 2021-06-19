@@ -1,14 +1,16 @@
 import DataLoader from 'dataloader'
-import { Comment } from '../entities/Comment'
+import { User } from 'src/entities/User'
+import { Vote } from '../entities/Vote'
+// import { Users } from '../entities/User'
 
-export const createCommentLoader = () => new DataLoader<string, Comment>(async (postIds) => {
-    const comments = await Comment.findByIds(postIds as string[])
+export const  createUpdootLoader = () => new DataLoader<{ postId: string, user: User }, Vote | null>(async (keys) => {
+    const updoots = await Vote.findByIds(keys as any)
 
-    const commentIdtoComment: Record<string, Comment> = {}
+    const updootIdsToUpdoot: Record<string, Vote> = {}
 
-    comments.forEach(c => {
-        commentIdtoComment[c.id] = c
+    updoots.forEach(updoot => {
+        updootIdsToUpdoot[`${updoot.user.id}|${updoot.postId}`] = updoot
     })
 
-    return postIds.map((postId) => commentIdtoComment[postId])
+    return keys.map((key) => updootIdsToUpdoot[`${key.user.id}|${key.postId}`])
 })

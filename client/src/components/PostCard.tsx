@@ -15,7 +15,7 @@ const updateAfterVote = (
   const data = cache.readFragment<{
     id: string;
     voteScore: number;
-    VoteStatus: number;
+    voteStatus: number | null;
   }>({
     // Post:njsdhwiiihiobdc
     id: "Post:" + postId,
@@ -23,6 +23,7 @@ const updateAfterVote = (
       fragment _ on Post {
         id
         voteScore
+        voteStatus
       }
     `,
   });
@@ -31,16 +32,10 @@ const updateAfterVote = (
     // if (data.votes?.VoteStatus !== 0) {
     //   return;
     // }
-    let newPoints
-    if(value === 1){
-      if(data.voteScore > 0) {
-        return
-      }
+    if (data.voteStatus === value) {
+      return;
     }
-    else if(value === -1) {
-      if(data.voteScore < 0) return
-    }
-    newPoints = (data.voteScore as number) + value;
+    const newPoints = (data.voteScore as number) + value;
     cache.writeFragment({
       id: 'Post:' + postId,
       fragment: gql`
@@ -49,13 +44,13 @@ const updateAfterVote = (
           voteScore
         }
       `,
-      data: { voteScore: newPoints },
+      data: { voteScore: newPoints, VoteStatus: value },
     });
     // console.log('data', data)
   }
 };
 
-export default function PostCard({ post }) {
+const PostCard = ({ post }) => {
   const [vote] = useVoteMutation()
 
   return (
@@ -65,6 +60,7 @@ export default function PostCard({ post }) {
         <div className="w-6 mx-auto text-gray-400 rounded cursor-pointer hover:bg-gray-300 hover:text-red-500">
           <i
             onClick={async () => {
+              if(post.voteStatus === 1) return
               await vote({
                 variables: {
                     identifier: post.identifier,
@@ -81,6 +77,7 @@ export default function PostCard({ post }) {
         <div className="w-6 mx-auto text-gray-400 rounded cursor-pointer hover:bg-gray-300 hover:text-blue-500">
           <i
             onClick={async () => {
+              if(post.voteStatus === 1) return
               await vote({
                 variables: {
                     identifier: post.identifier,
@@ -147,3 +144,5 @@ export default function PostCard({ post }) {
     </div>
   );
 }
+
+export default PostCard
