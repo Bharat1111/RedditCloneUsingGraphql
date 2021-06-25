@@ -5,9 +5,9 @@ import { useApollo } from '../utils/createWithApollo';
 function MyApp({ Component, pageProps }: any) {
   const client = useApollo(pageProps)
   return (
-    <ApolloProvider client={client}>
-      <Component {...pageProps} />
-    </ApolloProvider>
+      <ApolloProvider client={client}>
+        <Component {...pageProps} />
+      </ApolloProvider>
   )
 }
 

@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { Fragment } from "react";
 import moment from "moment";
-import { useVoteMutation, VoteMutation } from "../generated/graphql";
 import { ApolloCache, gql } from "@apollo/client";
 import classNames from 'classnames'
+
+import { useVoteMutation, VoteMutation } from "../generated/graphql";
 // interface PostCardProps {
 //     post: Post
 // }
@@ -60,7 +61,7 @@ const PostCard = ({ post }) => {
         <div className="w-6 mx-auto text-gray-400 rounded cursor-pointer hover:bg-gray-300 hover:text-red-500">
           <i
             onClick={async () => {
-              if(post.voteStatus === 1) return
+              if(post.userVote === 1) return
               await vote({
                 variables: {
                     identifier: post.identifier,
@@ -79,7 +80,7 @@ const PostCard = ({ post }) => {
         <div className="w-6 mx-auto text-gray-400 rounded cursor-pointer hover:bg-gray-300 hover:text-blue-500">
           <i
             onClick={async () => {
-              if(post.voteStatus === 1) return
+              if(post.userVote === -1) return
               await vote({
                 variables: {
                     identifier: post.identifier,
@@ -99,15 +100,15 @@ const PostCard = ({ post }) => {
       <div className="w-full p-2">
         <div className="flex items-center">
           <Link href={`/r/${post.subName}`}>
-            <Fragment>
               <img
                 src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
                 className="w-6 h-6 mr-1 rounded-full cursor-pointer"
-              />
-              <a className="text-xs font-bold cursor-pointer hover:underline">
-                /r/{post.subName}
-              </a>
-            </Fragment>
+                />
+          </Link>
+          <Link href={`/r/${post.subName}`}>
+            <a className="text-xs font-bold cursor-pointer hover:underline">
+              /r/{post.subName}
+            </a>
           </Link>
           <p className="text-xs text-gray-500">
             <span className="mx-1">•</span>

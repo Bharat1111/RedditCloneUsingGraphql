@@ -52,9 +52,6 @@ export class Post extends BaseEntity {
   @JoinColumn({ name: 'username', referencedColumnName: 'username' })
   user: User;
 
-  @Field({ nullable: true })
-  voteStatus: number
-
   @ManyToOne(() => Sub, (sub) => sub.posts)
   @JoinColumn({ name: 'subName', referencedColumnName: 'name' })
   sub: Sub
