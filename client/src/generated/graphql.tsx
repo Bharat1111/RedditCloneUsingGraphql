@@ -101,6 +101,7 @@ export type Query = {
   getPosts: Array<Post>;
   getPost?: Maybe<Post>;
   getCounts: CountsResponse;
+  getSub: Sub;
 };
 
 
@@ -113,6 +114,11 @@ export type QueryGetPostArgs = {
 export type QueryGetCountsArgs = {
   slug: Scalars['String'];
   identifier: Scalars['String'];
+};
+
+
+export type QueryGetSubArgs = {
+  name: Scalars['String'];
 };
 
 export type RegisterInput = {
@@ -129,9 +135,10 @@ export type Sub = {
   name: Scalars['String'];
   title: Scalars['String'];
   description: Scalars['String'];
-  imageUrn: Scalars['String'];
-  bannerUrn: Scalars['String'];
+  imageUrn?: Maybe<Scalars['String']>;
+  bannerUrn?: Maybe<Scalars['String']>;
   username: Scalars['String'];
+  posts: Array<Post>;
 };
 
 export type SubInput = {
@@ -211,6 +218,30 @@ export type VoteMutationVariables = Exact<{
 export type VoteMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'vote'>
+);
+
+export type GetSubQueryVariables = Exact<{
+  name: Scalars['String'];
+}>;
+
+
+export type GetSubQuery = (
+  { __typename?: 'Query' }
+  & { getSub: (
+    { __typename?: 'Sub' }
+    & Pick<Sub, 'id' | 'createdAt' | 'name' | 'title' | 'username' | 'description' | 'bannerUrn' | 'imageUrn'>
+    & { posts: Array<(
+      { __typename?: 'Post' }
+      & Pick<Post, 'id' | 'identifier' | 'title' | 'slug' | 'body' | 'username' | 'commentCount' | 'voteScore' | 'userVote' | 'createdAt'>
+      & { votes?: Maybe<Array<(
+        { __typename?: 'Vote' }
+        & Pick<Vote, 'id' | 'value' | 'username' | 'postId' | 'VoteStatus' | 'createdAt'>
+      )>>, comments?: Maybe<Array<(
+        { __typename?: 'Comment' }
+        & Pick<Comment, 'body' | 'id' | 'identifier' | 'username' | 'postId' | 'createdAt'>
+      )>> }
+    )> }
+  ) }
 );
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
@@ -379,6 +410,77 @@ export function useVoteMutation(baseOptions?: Apollo.MutationHookOptions<VoteMut
 export type VoteMutationHookResult = ReturnType<typeof useVoteMutation>;
 export type VoteMutationResult = Apollo.MutationResult<VoteMutation>;
 export type VoteMutationOptions = Apollo.BaseMutationOptions<VoteMutation, VoteMutationVariables>;
+export const GetSubDocument = gql`
+    query GetSub($name: String!) {
+  getSub(name: $name) {
+    id
+    createdAt
+    name
+    title
+    username
+    description
+    posts {
+      id
+      identifier
+      title
+      slug
+      body
+      username
+      commentCount
+      voteScore
+      userVote
+      createdAt
+      votes {
+        id
+        value
+        username
+        postId
+        VoteStatus
+        createdAt
+      }
+      comments {
+        body
+        id
+        identifier
+        body
+        username
+        postId
+        createdAt
+      }
+    }
+    bannerUrn
+    imageUrn
+  }
+}
+    `;
+
+/**
+ * __useGetSubQuery__
+ *
+ * To run a query within a React component, call `useGetSubQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSubQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSubQuery({
+ *   variables: {
+ *      name: // value for 'name'
+ *   },
+ * });
+ */
+export function useGetSubQuery(baseOptions: Apollo.QueryHookOptions<GetSubQuery, GetSubQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetSubQuery, GetSubQueryVariables>(GetSubDocument, options);
+      }
+export function useGetSubLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSubQuery, GetSubQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetSubQuery, GetSubQueryVariables>(GetSubDocument, options);
+        }
+export type GetSubQueryHookResult = ReturnType<typeof useGetSubQuery>;
+export type GetSubLazyQueryHookResult = ReturnType<typeof useGetSubLazyQuery>;
+export type GetSubQueryResult = Apollo.QueryResult<GetSubQuery, GetSubQueryVariables>;
 export const MeDocument = gql`
     query Me {
   me {

@@ -1,0 +1,42 @@
+query GetSub($name: String!) {
+  getSub(name: $name) {
+    id
+    createdAt
+    name
+    title
+    username
+    description
+    posts {
+      id
+      identifier
+      title
+      slug
+      body
+      username
+      commentCount
+      voteScore
+      userVote
+      createdAt
+      votes {
+        id
+        value
+        username
+        postId
+        VoteStatus
+        createdAt
+      }
+      comments {
+        body
+        id
+        identifier
+        body
+        username
+        postId
+        createdAt
+      }
+    }
+
+    bannerUrn
+    imageUrn
+  }
+}

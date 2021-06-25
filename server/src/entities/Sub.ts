@@ -41,11 +41,11 @@ import {
     @Column({ type: "text", nullable: true })
     description: string;
   
-    @Field()
+    @Field({ nullable: true })
     @Column({ nullable: true })
     imageUrn: string;
   
-    @Field()
+    @Field({ nullable: true })
     @Column({ nullable: true })
     bannerUrn: string;
 
@@ -57,6 +57,7 @@ import {
     @JoinColumn({ name: 'username', referencedColumnName: 'username' })
     user: User;
   
+    @Field(() => [Post])
     @OneToMany(() => Post, (post) => post.sub)
     posts: Post[];
   }
