@@ -11,6 +11,7 @@ query Posts {
     createdAt
     subName
     voteStatus
+    userVote
     comments {
       id
       body

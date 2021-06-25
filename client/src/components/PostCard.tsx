@@ -3,7 +3,7 @@ import { Fragment } from "react";
 import moment from "moment";
 import { useVoteMutation, VoteMutation } from "../generated/graphql";
 import { ApolloCache, gql } from "@apollo/client";
-
+import classNames from 'classnames'
 // interface PostCardProps {
 //     post: Post
 // }
@@ -15,7 +15,7 @@ const updateAfterVote = (
   const data = cache.readFragment<{
     id: string;
     voteScore: number;
-    voteStatus: number | null;
+    userVote: number | null;
   }>({
     // Post:njsdhwiiihiobdc
     id: "Post:" + postId,
@@ -23,28 +23,28 @@ const updateAfterVote = (
       fragment _ on Post {
         id
         voteScore
-        voteStatus
+        userVote
       }
     `,
   });
 // console.log(data)
   if (data) {
-    // if (data.votes?.VoteStatus !== 0) {
+    // if (data.votes?.userVote !== 0) {
     //   return;
     // }
-    if (data.voteStatus === value) {
+    if (data.userVote === value) {
       return;
     }
-    const newPoints = (data.voteScore as number) + value;
+    const newPoints = (data.voteScore as number) + (!data.userVote ? 1 : 2) * value;
     cache.writeFragment({
       id: 'Post:' + postId,
       fragment: gql`
         fragment __ on Post {
-          id
           voteScore
+          userVote
         }
       `,
-      data: { voteScore: newPoints, VoteStatus: value },
+      data: { voteScore: newPoints, userVote: value },
     });
     // console.log('data', data)
   }
@@ -70,7 +70,9 @@ const PostCard = ({ post }) => {
                   update: (cache) => updateAfterVote(1, post.id, cache)
               });
             }}
-            className="fas fa-arrow-up"
+            className={classNames('fas fa-arrow-up', {
+              'text-red-500': post?.userVote === 1
+            })}
           ></i>
         </div>
         <p className="text-xs font-bold">{post.voteScore}</p>
@@ -87,7 +89,9 @@ const PostCard = ({ post }) => {
                 update: (cache) => updateAfterVote(-1, post.id, cache)
               });
             }}
-            className="fas fa-arrow-down"
+            className={classNames('fas fa-arrow-down', {
+              'text-blue-600': post?.userVote === -1
+            })}
           ></i>
         </div>
       </div>

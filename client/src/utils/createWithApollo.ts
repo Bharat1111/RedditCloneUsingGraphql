@@ -1,14 +1,14 @@
 import { ApolloClient, ApolloLink, createHttpLink, InMemoryCache, NormalizedCacheObject } from "@apollo/client";
 import { IncomingHttpHeaders } from "http";
 import fetch from "isomorphic-unfetch";
-import type { AppProps } from "next/app";
+import { AppProps } from "next/app";
 import { useMemo } from "react";
 
 const APOLLO_STATE_PROP_NAME = "__APOLLO_STATE__";
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
 
-const createApolloClient = (headers: IncomingHttpHeaders | null = null) => {
+export const createApolloClient = (initialState, headers: IncomingHttpHeaders | null = null) => {
   const enhancedFetch = (url: RequestInfo, init: RequestInit) => {
     // console.log('initial headers', init)
     return fetch(url, {
@@ -58,22 +58,23 @@ export const initializeApollo = (
 
   // If your page has Next.js data fetching methods that use Apollo Client, the initial state
   // get hydrated here
-  // if (initialState) {
+  if (initialState) {
   //   // Get existing cache, loaded during client side data fetching
-  //   const existingCache = _apolloClient.extract();
+    const existingCache = _apolloClient.extract();
 
   //   // Merge the existing cache into data passed from getStaticProps/getServerSideProps
-  //   // const data = merge(initialState, existingCache, {
+    // const data = merge(initialState, existingCache, {
   //   //   // combine arrays using object equality (like in sets)
-  //   //   arrayMerge: (destinationArray, sourceArray) => [
-  //   //     ...sourceArray,
-  //   //     ...destinationArray.filter((d) => sourceArray.every((s) => !isEqual(d, s))),
+      // arrayMerge: (destinationArray, sourceArray) => [
+      //   ...sourceArray,
+      //   ...destinationArray.filter((d) => sourceArray.every((s) => !isEqual(d, s))),
   //   //   ],
-  //   // });
+    // });
+    const data = initialState
 
   //   // Restore the cache with the merged data
-  //   _apolloClient.cache.restore(data);
-  // }
+    _apolloClient.cache.restore(data);
+  }
 
   // For SSG and SSR always create a new Apollo Client
   if (typeof window === "undefined") return _apolloClient;

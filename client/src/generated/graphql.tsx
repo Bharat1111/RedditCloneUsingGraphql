@@ -86,13 +86,14 @@ export type Post = {
   body: Scalars['String'];
   subName: Scalars['String'];
   username: Scalars['String'];
+  voteStatus?: Maybe<Scalars['Float']>;
   comments?: Maybe<Array<Comment>>;
   votes?: Maybe<Array<Vote>>;
   commentCount?: Maybe<Scalars['Float']>;
   voteScore?: Maybe<Scalars['Float']>;
+  userVote: Scalars['Float'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
-  voteStatus?: Maybe<Scalars['Int']>;
 };
 
 export type Query = {
@@ -231,7 +232,7 @@ export type PostsQuery = (
   { __typename?: 'Query' }
   & { getPosts: Array<(
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'identifier' | 'slug' | 'username' | 'commentCount' | 'voteScore' | 'title' | 'body' | 'createdAt' | 'subName' | 'voteStatus'>
+    & Pick<Post, 'id' | 'identifier' | 'slug' | 'username' | 'commentCount' | 'voteScore' | 'title' | 'body' | 'createdAt' | 'subName' | 'voteStatus' | 'userVote'>
     & { comments?: Maybe<Array<(
       { __typename?: 'Comment' }
       & Pick<Comment, 'id' | 'body' | 'username' | 'postId' | 'createdAt'>
@@ -430,6 +431,7 @@ export const PostsDocument = gql`
     createdAt
     subName
     voteStatus
+    userVote
     comments {
       id
       body

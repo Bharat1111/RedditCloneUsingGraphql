@@ -52,6 +52,9 @@ export class Post extends BaseEntity {
   @JoinColumn({ name: 'username', referencedColumnName: 'username' })
   user: User;
 
+  @Field({ nullable: true })
+  voteStatus: number
+
   @ManyToOne(() => Sub, (sub) => sub.posts)
   @JoinColumn({ name: 'subName', referencedColumnName: 'name' })
   sub: Sub
@@ -74,6 +77,7 @@ export class Post extends BaseEntity {
     return this.votes?.reduce((prev, curr) => prev + (curr.value || 0), 0)
   }
 
+  @Field({ nullable: true })
   protected userVote: number
   setUserVote(user: User) {
     const index = this.votes?.findIndex(v => v.username === user.username)

@@ -17,6 +17,7 @@ import { User } from "../entities/User";
 import { Sub } from "../entities/Sub";
 import { MyContext } from "../types";
 import { isAuth } from "../utils/isAuth";
+import { user } from "../utils/user";
 import { Comment } from "../entities/Comment";
 import { getRepository } from "typeorm";
 // import { Connection } from "typeorm";
@@ -39,6 +40,7 @@ export class PostResolver {
     if(!req.session.userId) {
       return null
     }
+    console.log('post loader', post)
     const user = User.findOne(req.session.userId)
 
     const updoot = await commentLoader.load({postId: post.id, user }) 
@@ -54,7 +56,10 @@ export class PostResolver {
   // }
 
   @Query(() => [Post])
-  async getPosts() {
+  @UseMiddleware(user)
+  async getPosts(
+    @Ctx() { req }: MyContext
+  ) {
 
     // const users = await connection
     // .getRepository(User)
@@ -63,10 +68,16 @@ export class PostResolver {
     // .getMany();
     // const userRepository = getRepository(User);
     // const users = await userRepository.find({ relations: ["photos"] });
+    const user = await User.findOne(req.session.userId)
 
     const postRepository = await getRepository(Post);
 
     const questions = await postRepository.find();
+
+    if(req.session.userId) {
+      questions.forEach(p => p.setUserVote(user!))
+    }
+
     return questions
   }
 
