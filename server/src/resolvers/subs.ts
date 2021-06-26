@@ -9,13 +9,15 @@ import {
     UseMiddleware,
   } from "type-graphql";
   import { getConnection, getRepository } from "typeorm";
+  const { GraphQLUpload } = require("graphql-upload");
+  import { createWriteStream } from "fs";
   
   import { User } from "../entities/User";
   import { Sub } from "../entities/Sub";
   import { isAuth } from "../utils/isAuth";
-  import { MyContext } from "../types";
+  import { Upload, MyContext } from "../types";
   import { Post } from "../entities/Post";
-import { user } from "../utils/user";
+  import { user } from "../utils/user";
   
   @InputType()
   class SubInput {
@@ -83,4 +85,19 @@ import { user } from "../utils/user";
       }
       return sub
     }
+
+    @Mutation(() => Boolean)
+    @UseMiddleware(isAuth)
+    async addProfilePicture(@Arg("picture", () => GraphQLUpload) {createReadStream, filename}: Upload) {
+      const writableStream = createWriteStream(
+        `${__dirname}/../../images/${filename}`,
+        { autoClose: true }
+      );
+      return new Promise((res, rej) => {
+        createReadStream()
+          .pipe(writableStream)
+          .on("finish", () => res(true))
+          .on("error", () => rej(false));
+      });
+  }
   }

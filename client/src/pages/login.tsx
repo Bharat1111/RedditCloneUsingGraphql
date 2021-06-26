@@ -31,6 +31,7 @@ const Login: React.FC<{}> = ({}) => {
             me: {username, email, createdAt,id},
           },
         });
+        cache.evict({ fieldName: "Posts:{}" })
       },
     });
 
