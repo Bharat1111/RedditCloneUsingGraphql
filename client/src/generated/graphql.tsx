@@ -12,6 +12,8 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** The `Upload` scalar type represents a file upload. */
+  Upload: any;
 };
 
 export type Comment = {
@@ -39,6 +41,7 @@ export type Mutation = {
   createPost: Post;
   createComment: Comment;
   createSub?: Maybe<Sub>;
+  addProfilePicture: Scalars['Boolean'];
   vote: Scalars['Boolean'];
 };
 
@@ -73,6 +76,11 @@ export type MutationCreateSubArgs = {
 };
 
 
+export type MutationAddProfilePictureArgs = {
+  picture: Scalars['Upload'];
+};
+
+
 export type MutationVoteArgs = {
   voteInput: VoteInput;
 };
@@ -102,6 +110,7 @@ export type Query = {
   getPost?: Maybe<Post>;
   getCounts: CountsResponse;
   getSub: Sub;
+  topSubs: Array<Sub>;
 };
 
 
@@ -146,6 +155,7 @@ export type SubInput = {
   title: Scalars['String'];
   description?: Maybe<Scalars['String']>;
 };
+
 
 export type User = {
   __typename?: 'User';
@@ -270,6 +280,17 @@ export type PostsQuery = (
       { __typename?: 'Vote' }
       & Pick<Vote, 'id' | 'username' | 'postId' | 'value' | 'VoteStatus'>
     )>> }
+  )> }
+);
+
+export type TopSubsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TopSubsQuery = (
+  { __typename?: 'Query' }
+  & { topSubs: Array<(
+    { __typename?: 'Sub' }
+    & Pick<Sub, 'name' | 'title' | 'imageUrn'>
   )> }
 );
 
@@ -576,3 +597,39 @@ export function usePostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Post
 export type PostsQueryHookResult = ReturnType<typeof usePostsQuery>;
 export type PostsLazyQueryHookResult = ReturnType<typeof usePostsLazyQuery>;
 export type PostsQueryResult = Apollo.QueryResult<PostsQuery, PostsQueryVariables>;
+export const TopSubsDocument = gql`
+    query TopSubs {
+  topSubs {
+    name
+    title
+    imageUrn
+  }
+}
+    `;
+
+/**
+ * __useTopSubsQuery__
+ *
+ * To run a query within a React component, call `useTopSubsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTopSubsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTopSubsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useTopSubsQuery(baseOptions?: Apollo.QueryHookOptions<TopSubsQuery, TopSubsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TopSubsQuery, TopSubsQueryVariables>(TopSubsDocument, options);
+      }
+export function useTopSubsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TopSubsQuery, TopSubsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TopSubsQuery, TopSubsQueryVariables>(TopSubsDocument, options);
+        }
+export type TopSubsQueryHookResult = ReturnType<typeof useTopSubsQuery>;
+export type TopSubsLazyQueryHookResult = ReturnType<typeof useTopSubsLazyQuery>;
+export type TopSubsQueryResult = Apollo.QueryResult<TopSubsQuery, TopSubsQueryVariables>;

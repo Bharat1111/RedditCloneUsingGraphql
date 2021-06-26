@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import { useGetSubQuery } from '../../generated/graphql'
 import PostCard from '../../components/PostCard'
 import Navbar from '../../components/Navbar'
+import Sidebar from '../../components/Sidebar'
 
 const Sub = () => {
   const router = useRouter()
@@ -13,9 +14,9 @@ const Sub = () => {
       name: subName
     }
   })
-  if(error) {
-    router.push('/')
-  }
+  // if(error) {
+  //   router.push('/')
+  // }
   return (
       <>
       <Navbar />
@@ -23,10 +24,14 @@ const Sub = () => {
         <div className="container flex pt-5">
           {loading ? <div>Loading...</div> : 
           !data ? <div>No Posts</div> : (
+            (<>
             <div className="w-160">
               {data.getSub.posts.map(post => <PostCard key={post.id} post={post} />)}
             </div>
+            <Sidebar sub={data && data.getSub} />
+            </>)
           )}
+          
         </div>
       </div>
       </>

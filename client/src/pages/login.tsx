@@ -37,7 +37,7 @@ const Login: React.FC<{}> = ({}) => {
 
     if (response.data?.login.id) {
       // console.log('login', response.data)
-      router.push("/");
+      router.back();
     }
   };
 

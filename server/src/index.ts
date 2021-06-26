@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { createConnection } from "typeorm"
 import express from 'express'
 import { ApolloServer } from "apollo-server-express";
@@ -5,6 +6,7 @@ import { buildSchema } from "type-graphql";
 import session from "express-session";
 import connectRedis from 'connect-redis'
 import cors from 'cors'
+const { graphqlUploadExpress } = require('graphql-upload');
 
 import { UserResolver } from "./resolvers/user";
 import { redis } from "./redis";
@@ -24,7 +26,8 @@ const main = async () => {
       resolvers: [UserResolver, PostResolver, SubPageResolver, VoteResolver],
       validate: false,
     }),
-    context: ({ req, res }) => ({ req, res, commentLoader: createUpdootLoader() })
+    context: ({ req, res }) => ({ req, res, commentLoader: createUpdootLoader() }),
+    uploads: false 
   })
 
   const corsOptions = {
@@ -49,6 +52,8 @@ const main = async () => {
         sameSite: "lax",
       },
   }))
+
+  app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
   apolloServer.applyMiddleware({ app, cors: false })
 
   app.listen(3001, () => {
