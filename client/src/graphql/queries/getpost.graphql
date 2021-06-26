@@ -1,0 +1,30 @@
+query Post($identifier: String!, $slug: String!) {
+  getPost(identifier: $identifier, slug: $slug) {
+    id
+    createdAt
+    username
+    title
+    slug
+    identifier
+    body
+    subName
+    commentCount
+    voteScore
+    userVote
+    votes {
+      id
+      value
+      username
+      postId
+      VoteStatus
+    }
+    comments {
+      id
+      body
+      username
+      identifier
+      postId
+      createdAt
+    }
+  }
+}

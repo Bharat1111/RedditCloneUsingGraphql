@@ -6,7 +6,7 @@ import { usePostsQuery, useTopSubsQuery } from "../generated/graphql";
 
 const Home = () => {
   const { data, loading } = usePostsQuery();
-  const { data: topSubs, loading: fetching } = useTopSubsQuery();
+  const { data: topSubs } = useTopSubsQuery();
   return (
     <>
       <Navbar />
@@ -35,7 +35,7 @@ const Home = () => {
             )}
           </div>
           {/* Sidebar */}
-          <div className="ml-6 w-80">
+          {topSubs?.topSubs && <div className="ml-6 w-80">
             <div className="bg-white rounded">
               <div className="p-4 border-b-2">
                 <p className="text-lg font-semibold text-center">
@@ -43,9 +43,9 @@ const Home = () => {
                 </p>
               </div>
               <div>
-                {topSubs?.topSubs.map((sub) => (
+                {topSubs.topSubs?.map((sub) => (
                   <div
-                    key={sub.name}
+                    key={sub.title}
                     className="flex items-center px-4 py-2 text-xs border-b"
                   >
                     <Link href={`/r/${sub.name}`}>
@@ -63,7 +63,7 @@ const Home = () => {
                 ))}
               </div>
             </div>
-          </div>
+          </div>}
         </div>
       </div>
     </>

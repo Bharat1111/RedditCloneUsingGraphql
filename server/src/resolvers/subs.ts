@@ -100,7 +100,7 @@ export class SubPageResolver {
 
   @Query(() => [Sub])
   async topSubs() {
-    const imageUrlExp = `COALESCE('http://localhost:3001/images/' || s."imageUrn", 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y')`
+    const imageUrlExp = `COALESCE('http://localhost:3001/images/' || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y', s."imageUrn")`
     const subs = await getConnection()
       .createQueryBuilder()
       .select(`s.title, s.name, ${imageUrlExp} as "imageUrl", count(p.id) as "postCount"`)

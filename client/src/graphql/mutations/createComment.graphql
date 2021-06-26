@@ -1,0 +1,3 @@
+mutation CreateComment($slug: String!, $identifier: String!, $body: String!) {
+  createComment(slug: $slug, identifier: $identifier, body: $body)
+}

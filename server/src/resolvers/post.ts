@@ -66,13 +66,20 @@ export class PostResolver {
   @Query(() => Post, { nullable: true })
   async getPost(
     @Arg("identifier") identifier: string,
-    @Arg("slug") slug: string
+    @Arg("slug") slug: string,
+    @Ctx() { req }: MyContext
   ) {
+    let post: Post
     try {
-      return Post.findOneOrFail({ identifier, slug });
+      post = await Post.findOneOrFail({ identifier, slug });
+      if(req.session.userId) {
+        const user = await User.findOneOrFail(req.session.userId)
+        post.setUserVote(user)
+      }
     } catch (error) {
       return null;
     }
+    return post
   }
 
   @Query(() => CountsResponse)
@@ -101,7 +108,7 @@ export class PostResolver {
     return Post.create({ body, title, user, sub: subRecord }).save();
   }
 
-  @Mutation(() => Comment)
+  @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
   async createComment(
     @Arg("body") body: string,
@@ -114,14 +121,16 @@ export class PostResolver {
       throw new Error("Post doesn't exists");
     }
 
+    if(!req.session.userId) return false
+
     const user = await User.findOne(req.session.userId);
 
-    const comment = await Comment.create({
+    await Comment.create({
       body,
       post,
       user,
     }).save();
 
-    return comment;
+    return true;
   }
 }
