@@ -34,7 +34,7 @@ const PostCard = ({ post }) => {
             </Link>
             <Link href={`/r/${post.subName}/${post.identifier}/${post.slug}`}>
               <a className="mx-1 hover:underline">
-                {moment(parseInt(post.createdAt)).format("DD MMM YYYY")}
+                {moment(parseInt(post.createdAt)).fromNow()}
               </a>
             </Link>
           </p>

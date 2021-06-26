@@ -39,7 +39,7 @@ export type Mutation = {
   login?: Maybe<User>;
   logout: Scalars['Boolean'];
   createPost: Post;
-  createComment: Scalars['Boolean'];
+  createComment?: Maybe<Comment>;
   createSub?: Maybe<Sub>;
   addProfilePicture: Scalars['Boolean'];
   vote: Scalars['Boolean'];
@@ -192,7 +192,10 @@ export type CreateCommentMutationVariables = Exact<{
 
 export type CreateCommentMutation = (
   { __typename?: 'Mutation' }
-  & Pick<Mutation, 'createComment'>
+  & { createComment?: Maybe<(
+    { __typename: 'Comment' }
+    & Pick<Comment, 'id' | 'body' | 'username' | 'postId' | 'createdAt' | 'identifier'>
+  )> }
 );
 
 export type LoginMutationVariables = Exact<{
@@ -330,7 +333,15 @@ export type TopSubsQuery = (
 
 export const CreateCommentDocument = gql`
     mutation CreateComment($slug: String!, $identifier: String!, $body: String!) {
-  createComment(slug: $slug, identifier: $identifier, body: $body)
+  createComment(slug: $slug, identifier: $identifier, body: $body) {
+    id
+    __typename
+    body
+    username
+    postId
+    createdAt
+    identifier
+  }
 }
     `;
 export type CreateCommentMutationFn = Apollo.MutationFunction<CreateCommentMutation, CreateCommentMutationVariables>;

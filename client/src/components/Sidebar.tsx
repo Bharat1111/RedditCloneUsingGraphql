@@ -24,8 +24,8 @@ const Sidebar = ({ sub }) => {
 
                         <p className="my-3">
                             <i className="fas fa-birthday-cake mr-2">
-                                Created {moment(parseInt(sub?.createdAt)).format("DD MMM YYYY")}
                             </i>
+                            Created {moment(parseInt(sub?.createdAt)).format("DD MMM YYYY")}
                         </p>
                         {data?.me && (
                             <Link href={`/r/${sub?.name}/create`}>

@@ -1,3 +1,11 @@
 mutation CreateComment($slug: String!, $identifier: String!, $body: String!) {
-  createComment(slug: $slug, identifier: $identifier, body: $body)
+  createComment(slug: $slug, identifier: $identifier, body: $body) {
+    id
+    __typename
+    body
+    username
+    postId
+    createdAt
+    identifier
+  }
 }

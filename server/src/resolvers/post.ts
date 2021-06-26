@@ -108,7 +108,7 @@ export class PostResolver {
     return Post.create({ body, title, user, sub: subRecord }).save();
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => Comment, { nullable: true })
   @UseMiddleware(isAuth)
   async createComment(
     @Arg("body") body: string,
@@ -121,16 +121,15 @@ export class PostResolver {
       throw new Error("Post doesn't exists");
     }
 
-    if(!req.session.userId) return false
+    if(!req.session.userId) return null
 
     const user = await User.findOne(req.session.userId);
 
-    await Comment.create({
+    return Comment.create({
       body,
       post,
       user,
     }).save();
 
-    return true;
   }
 }
