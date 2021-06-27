@@ -7,7 +7,7 @@ import moment from "moment";
 import {
   useCreateCommentMutation,
   usePostQuery,
-  PostsDocument,
+  useMeQuery,
 } from "../../../../generated/graphql";
 import Sidebar from "../../../../components/Sidebar";
 import UpdootSection from "../../../../components/UpdootSection";
@@ -23,6 +23,7 @@ const Post = () => {
   const sub = router.query.sub;
   const slug = router.query.slug as string;
 
+  const { data: medata } = useMeQuery()
   const [createComment] = useCreateCommentMutation();
   const { data, loading, error } = usePostQuery({
     skip: !identifier && !slug,
@@ -101,7 +102,7 @@ const Post = () => {
                 </div>
                 <hr />
                 {/* Post Comment */}
-                <div className="pl-10 mt-3 pr-6 mb-4">
+                {medata.me ? <div className="pl-10 mt-3 pr-6 mb-4">
                   <div>
                     <p className="mb-1 text-xs">
                       Comment as
@@ -149,6 +150,7 @@ const Post = () => {
                       </div>
                     </form>
                   </div>
+                      </div> : <div>
                   <div className="flex justify-between items-center px-2 py-2 border border-gray-200 rounded">
                     <p className="text-gray-500 font-semibold">
                       login or sign up to leave a comment
@@ -164,7 +166,7 @@ const Post = () => {
                       </Link>
                     </div>
                   </div>
-                </div>
+                </div>}
                 {/* Comments */}
                 {data.getPost.comments.map((comment) => (
                   <div className="flex mt-4" key={comment.id}>

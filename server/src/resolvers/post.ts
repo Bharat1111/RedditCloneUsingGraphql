@@ -72,6 +72,8 @@ export class PostResolver {
     let post: Post
     try {
       post = await Post.findOneOrFail({ identifier, slug });
+      const comments = await Comment.find({ where: {post }, order: { createdAt: 'DESC'}})
+      post.comments = comments
       if(req.session.userId) {
         const user = await User.findOneOrFail(req.session.userId)
         post.setUserVote(user)
