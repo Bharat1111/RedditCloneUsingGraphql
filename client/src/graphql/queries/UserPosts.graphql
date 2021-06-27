@@ -1,0 +1,29 @@
+query GetUserPost($username: String!) {
+  getUsetPosts(username: $username) {
+    user {
+      username
+      createdAt
+    }
+    posts {
+      id
+      identifier
+      body
+      slug
+      subName
+      username
+      userVote
+      commentCount
+      voteScore
+      title
+      createdAt
+    }
+    comments {
+      id
+      body
+      username
+      postId
+      identifier
+      createdAt
+    }
+  }
+}

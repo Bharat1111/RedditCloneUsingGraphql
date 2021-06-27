@@ -1,8 +1,10 @@
 import { User } from "../entities/User";
 import argon2 from "argon2";
-import { Arg, Ctx, Field, InputType, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 import { getConnection } from "typeorm";
 import { MyContext } from "../types";
+import { Post } from "../entities/Post";
+import { Comment } from "../entities/Comment";
 
 @InputType()
 class RegisterInput {
@@ -14,6 +16,15 @@ class RegisterInput {
   password: string;
 }
 
+@ObjectType()
+class UserResponse {
+  @Field(() => User)
+  user: User
+  @Field(() => [Post])
+  posts: Post[]
+  @Field(() => [Comment])
+  comments: Comment[]
+}
 @Resolver()
 export class UserResolver {
   @Query(() => User, { nullable: true })
@@ -92,5 +103,38 @@ async login(
               resolve(true);
           })
       })
+  }
+
+  @Query(() => UserResponse)
+  async getUsetPosts(
+    @Arg('username') username: string,
+    @Ctx() { req }: MyContext
+  ) {
+    try {
+      const user = await User.findOneOrFail({ username },
+        { select: ['username', 'createdAt']})
+      const posts = await Post.find({
+        where: { user }, order: {createdAt: 'DESC'}
+      })
+
+      const comments = await Comment.find({ where: {username}, relations: ["post"], order: {createdAt: 'DESC'} })
+
+      if(req.session.userId) {
+        posts.forEach(p => p.setUserVote(user))
+      }
+
+      // let submissions: any[] = []
+      // posts.forEach(p => submissions.push({ type: 'Post', ...p}))
+      // comments.forEach(c => submissions.push({ type: 'Comment', ...c}))
+
+      // submissions.sort((a, b) => {
+      //   if(b.createdAt > a.createdAt) return 1
+      //   if(b.createdAt < a.createdAt) return -1
+      //   return 0
+      // })
+      return {user, posts, comments}
+    } catch (error) {
+      throw new Error('Something bad happen')
+    }
   }
 }

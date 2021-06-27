@@ -106,11 +106,17 @@ export type Post = {
 export type Query = {
   __typename?: 'Query';
   me?: Maybe<User>;
+  getUsetPosts: UserResponse;
   getPosts: Array<Post>;
   getPost?: Maybe<Post>;
   getCounts: CountsResponse;
   getSub: Sub;
   topSubs: Array<Sub>;
+};
+
+
+export type QueryGetUsetPostsArgs = {
+  username: Scalars['String'];
 };
 
 
@@ -164,6 +170,13 @@ export type User = {
   email: Scalars['String'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
+};
+
+export type UserResponse = {
+  __typename?: 'UserResponse';
+  user: User;
+  posts: Array<Post>;
+  comments: Array<Comment>;
 };
 
 export type Vote = {
@@ -258,6 +271,28 @@ export type VoteMutationVariables = Exact<{
 export type VoteMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'vote'>
+);
+
+export type GetUserPostQueryVariables = Exact<{
+  username: Scalars['String'];
+}>;
+
+
+export type GetUserPostQuery = (
+  { __typename?: 'Query' }
+  & { getUsetPosts: (
+    { __typename?: 'UserResponse' }
+    & { user: (
+      { __typename?: 'User' }
+      & Pick<User, 'username' | 'createdAt'>
+    ), posts: Array<(
+      { __typename?: 'Post' }
+      & Pick<Post, 'id' | 'identifier' | 'body' | 'slug' | 'subName' | 'username' | 'userVote' | 'commentCount' | 'voteScore' | 'title' | 'createdAt'>
+    )>, comments: Array<(
+      { __typename?: 'Comment' }
+      & Pick<Comment, 'id' | 'body' | 'username' | 'postId' | 'identifier' | 'createdAt'>
+    )> }
+  ) }
 );
 
 export type GetSubQueryVariables = Exact<{
@@ -565,6 +600,65 @@ export function useVoteMutation(baseOptions?: Apollo.MutationHookOptions<VoteMut
 export type VoteMutationHookResult = ReturnType<typeof useVoteMutation>;
 export type VoteMutationResult = Apollo.MutationResult<VoteMutation>;
 export type VoteMutationOptions = Apollo.BaseMutationOptions<VoteMutation, VoteMutationVariables>;
+export const GetUserPostDocument = gql`
+    query GetUserPost($username: String!) {
+  getUsetPosts(username: $username) {
+    user {
+      username
+      createdAt
+    }
+    posts {
+      id
+      identifier
+      body
+      slug
+      subName
+      username
+      userVote
+      commentCount
+      voteScore
+      title
+      createdAt
+    }
+    comments {
+      id
+      body
+      username
+      postId
+      identifier
+      createdAt
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetUserPostQuery__
+ *
+ * To run a query within a React component, call `useGetUserPostQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserPostQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserPostQuery({
+ *   variables: {
+ *      username: // value for 'username'
+ *   },
+ * });
+ */
+export function useGetUserPostQuery(baseOptions: Apollo.QueryHookOptions<GetUserPostQuery, GetUserPostQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserPostQuery, GetUserPostQueryVariables>(GetUserPostDocument, options);
+      }
+export function useGetUserPostLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserPostQuery, GetUserPostQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserPostQuery, GetUserPostQueryVariables>(GetUserPostDocument, options);
+        }
+export type GetUserPostQueryHookResult = ReturnType<typeof useGetUserPostQuery>;
+export type GetUserPostLazyQueryHookResult = ReturnType<typeof useGetUserPostLazyQuery>;
+export type GetUserPostQueryResult = Apollo.QueryResult<GetUserPostQuery, GetUserPostQueryVariables>;
 export const GetSubDocument = gql`
     query GetSub($name: String!) {
   getSub(name: $name) {
