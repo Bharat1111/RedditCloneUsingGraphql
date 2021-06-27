@@ -34,33 +34,41 @@ const User = () => {
             {data.getUsetPosts.comments.map((c) => (
               <div className="flex my-4 bg-white rounded">
                 <div className="flex-shrink-0 w-10 py-4 text-center rounded-1">
-                  <i className="fas fa-comment-alt fa-xs mr-1 text-gray-500"></i>
+                  <i className="fas fa-comment-alt fa-xs  text-gray-500"></i>
                 </div>
                 <div className="w-full p-2">
                   <p className="mb-2 text-xs text-gray-500">
-                    <Link href={`/u/${c.username}`}>
-                        <a className="mr-2 text-blue-500 cursor-pointer hover:underline">
-                            {c.username}
-                        </a>
-                    </Link>
-                    <span>Commented on </span>
-                    <Link href={`${c.identifier}`}>
+                    {c.username}
+                    <span className='ml-2'>Commented on </span>
+                    <Link href={`/r/${c.identifier}`}>
                         <a className="cursor-pointer hover:underline">
                             {c.postId}
                         </a>
                     </Link>
                     
-                    <Link href={`/r/${c.identifier}`}>
-                        <a className=" ml-4 text-black cursor-pointer hover:underline">
+                        <span className=" ml-4 text-black">
                         {moment(parseInt(c.createdAt)).fromNow()}
-                        </a>
-                    </Link>
+                        </span>
                   </p>
                   <hr />
                   <p>{c.body}</p>
                 </div>
               </div>
             ))}
+          </div>
+          <div className="w-80 ml-6">
+              <div className="bg-white rounded">
+                  <div className="bg-blue-500 rounded-t p-3">
+                      <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y" alt="user profile" className='w-16 h-16 mx-auto border-2 border-white rounded-full' />
+                  </div>
+                  <div className="p-3 text-center">
+                      <h1 className='text0xl uppercase mb-3'>{
+                          username
+                      }</h1>
+                      <hr />
+                      <p className='mt-3'>Joined {moment(parseInt(data.getUsetPosts.user.createdAt)).fromNow()}</p>
+                  </div>
+              </div>
           </div>
         </div>
       )}
