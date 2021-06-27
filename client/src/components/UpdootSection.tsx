@@ -50,11 +50,7 @@ const updateAfterVote = (
 
 const UpdootSection = ({ post }) => {
     const router = useRouter()
-    const [vote, { error, loading }] = useVoteMutation()
-
-    if(loading) {
-        return <div>Loading...</div>
-    }
+    const [vote, { error }] = useVoteMutation()
 
     if(error?.message) {
         router.push('/login')

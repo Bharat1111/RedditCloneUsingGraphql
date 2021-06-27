@@ -108,7 +108,7 @@ const Post = () => {
                       Comment as
                       <Link href={`/u/user`}>
                         <a className="ml-2 underline font-semibold text-blue-500">
-                          username
+                          {medata.me.username}
                         </a>
                       </Link>
                     </p>
@@ -132,7 +132,7 @@ const Post = () => {
                             });
                           },
                         });
-                        setNewComment("njaihih")
+                        setNewComment("")
                       }}
                     >
                       <textarea
@@ -195,7 +195,7 @@ const Post = () => {
           </div>
         </div>
         {/* Sidebar */}
-        {data?.getPost && <Sidebar sub={data.getPost} />}
+        {/* {data?.getPost && <Sidebar sub={data.getPost}/>} */}
       </div>
     </div>
   );

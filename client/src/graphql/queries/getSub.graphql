@@ -17,6 +17,7 @@ query GetSub($name: String!) {
       voteScore
       userVote
       createdAt
+      subName
       votes {
         id
         value

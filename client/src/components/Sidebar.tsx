@@ -2,9 +2,8 @@ import React from 'react'
 import moment from "moment";
 import Link from "next/link";
 import { useMeQuery } from '../generated/graphql';
-const Sidebar = ({ sub }) => {
+const Sidebar = ({ sub: {getSub} }) => {
     const { data, loading } = useMeQuery()
-
     return (
         <div className='ml-6 w-80'>
             <div className="bg-white rounded">
@@ -13,7 +12,7 @@ const Sidebar = ({ sub }) => {
                 </div>
                     <div className="p-3">
                         <p className="mb-3 text-md">
-                            {sub?.description}
+                            {getSub?.description}
                         </p>
                         <div className="flex mb-3 text-sm-font-medium">
                             <div className="w-1/2">
@@ -25,10 +24,10 @@ const Sidebar = ({ sub }) => {
                         <p className="my-3">
                             <i className="fas fa-birthday-cake mr-2">
                             </i>
-                            Created {moment(parseInt(sub?.createdAt)).format("DD MMM YYYY")}
+                            Created {moment(parseInt(getSub?.createdAt)).format("DD MMM YYYY")}
                         </p>
                         {data?.me && (
-                            <Link href={`/r/${sub?.name}/create`}>
+                            <Link href={`/r/${getSub?.name}/create`}>
                                 <a className="w-full blue button text-sm py-1">
                                     Create Post
                                 </a>

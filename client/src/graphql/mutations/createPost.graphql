@@ -1,0 +1,12 @@
+mutation CreatePost($sub: String!, $title: String!, $body: String!) {
+  createPost(sub: $sub, title: $title, body: $body) {
+    id
+    identifier
+    slug
+    subName
+    username
+    commentCount
+    voteScore
+    createdAt
+  }
+}

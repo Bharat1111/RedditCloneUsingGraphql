@@ -198,6 +198,21 @@ export type CreateCommentMutation = (
   )> }
 );
 
+export type CreatePostMutationVariables = Exact<{
+  sub: Scalars['String'];
+  title: Scalars['String'];
+  body: Scalars['String'];
+}>;
+
+
+export type CreatePostMutation = (
+  { __typename?: 'Mutation' }
+  & { createPost: (
+    { __typename?: 'Post' }
+    & Pick<Post, 'id' | 'identifier' | 'slug' | 'subName' | 'username' | 'commentCount' | 'voteScore' | 'createdAt'>
+  ) }
+);
+
 export type LoginMutationVariables = Exact<{
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -257,7 +272,7 @@ export type GetSubQuery = (
     & Pick<Sub, 'id' | 'createdAt' | 'name' | 'title' | 'username' | 'description' | 'bannerUrn' | 'imageUrn'>
     & { posts: Array<(
       { __typename?: 'Post' }
-      & Pick<Post, 'id' | 'identifier' | 'title' | 'slug' | 'body' | 'username' | 'commentCount' | 'voteScore' | 'userVote' | 'createdAt'>
+      & Pick<Post, 'id' | 'identifier' | 'title' | 'slug' | 'body' | 'username' | 'commentCount' | 'voteScore' | 'userVote' | 'createdAt' | 'subName'>
       & { votes?: Maybe<Array<(
         { __typename?: 'Vote' }
         & Pick<Vote, 'id' | 'value' | 'username' | 'postId' | 'VoteStatus' | 'createdAt'>
@@ -372,6 +387,48 @@ export function useCreateCommentMutation(baseOptions?: Apollo.MutationHookOption
 export type CreateCommentMutationHookResult = ReturnType<typeof useCreateCommentMutation>;
 export type CreateCommentMutationResult = Apollo.MutationResult<CreateCommentMutation>;
 export type CreateCommentMutationOptions = Apollo.BaseMutationOptions<CreateCommentMutation, CreateCommentMutationVariables>;
+export const CreatePostDocument = gql`
+    mutation CreatePost($sub: String!, $title: String!, $body: String!) {
+  createPost(sub: $sub, title: $title, body: $body) {
+    id
+    identifier
+    slug
+    subName
+    username
+    commentCount
+    voteScore
+    createdAt
+  }
+}
+    `;
+export type CreatePostMutationFn = Apollo.MutationFunction<CreatePostMutation, CreatePostMutationVariables>;
+
+/**
+ * __useCreatePostMutation__
+ *
+ * To run a mutation, you first call `useCreatePostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreatePostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createPostMutation, { data, loading, error }] = useCreatePostMutation({
+ *   variables: {
+ *      sub: // value for 'sub'
+ *      title: // value for 'title'
+ *      body: // value for 'body'
+ *   },
+ * });
+ */
+export function useCreatePostMutation(baseOptions?: Apollo.MutationHookOptions<CreatePostMutation, CreatePostMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreatePostMutation, CreatePostMutationVariables>(CreatePostDocument, options);
+      }
+export type CreatePostMutationHookResult = ReturnType<typeof useCreatePostMutation>;
+export type CreatePostMutationResult = Apollo.MutationResult<CreatePostMutation>;
+export type CreatePostMutationOptions = Apollo.BaseMutationOptions<CreatePostMutation, CreatePostMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($usernameOrEmail: String!, $password: String!) {
   login(usernameOrEmail: $usernameOrEmail, password: $password) {
@@ -528,6 +585,7 @@ export const GetSubDocument = gql`
       voteScore
       userVote
       createdAt
+      subName
       votes {
         id
         value

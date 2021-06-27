@@ -8,7 +8,6 @@ import Sidebar from '../../components/Sidebar'
 const Sub = () => {
   const router = useRouter()
   const subName = router.query.sub as string
-
   const { data, loading, error } = useGetSubQuery({
     variables: {
       name: subName
@@ -26,9 +25,9 @@ const Sub = () => {
           !data ? <div>No Posts</div> : (
             (<>
             <div className="w-160">
-              {data.getSub.posts.map(post => <PostCard key={post.id} post={post} />)}
+              {data.getSub.posts.map(post => (<PostCard key={post.id} post={post} />))}
             </div>
-            <Sidebar sub={data && data.getSub} />
+            <Sidebar sub={data && data} />
             </>)
           )}
           

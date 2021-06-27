@@ -6,7 +6,6 @@ import Buttons from './Buttons'
 
 const PostCard = ({ post }) => {
   // const [vote] = useVoteMutation()
-
   return (
     <div key={post.identifier} className="flex mb-4 bg-white rounded">
       {/* Vote Section */}
