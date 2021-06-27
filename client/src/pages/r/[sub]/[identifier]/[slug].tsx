@@ -143,7 +143,7 @@ const Post = () => {
                       <div className="flex justify-end">
                         <button
                           disabled={newComment.trim() === ""}
-                          className="px-3 py-1 blue button"
+                          className="px-3 mb-2 py-1 blue button"
                         >
                           Comment
                         </button>

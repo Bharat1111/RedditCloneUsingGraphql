@@ -54,7 +54,7 @@ export class PostResolver {
 
     const postRepository = await getRepository(Post);
 
-    const questions = await postRepository.find();
+    const questions = await postRepository.find({order: {createdAt: 'DESC'}});
 
     if(req.session.userId) {
       questions.forEach(p => p.setUserVote(user!))
