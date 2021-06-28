@@ -19,7 +19,7 @@ const Home = () => {
 
         <div className="container pt-4 flex">
           {/* Posts */}
-          <div className="w-160">
+          <div className="w-full md:w-160 px-4 md:p-0">
             {loading ? (
               <div>Loading...</div>
             ) : !data ? (
@@ -35,7 +35,7 @@ const Home = () => {
             )}
           </div>
           {/* Sidebar */}
-          {topSubs?.topSubs && <div className="ml-6 w-80">
+          {topSubs?.topSubs && <div className="hidden md:block ml-6 w-80">
             <div className="bg-white rounded">
               <div className="p-4 border-b-2">
                 <p className="text-lg font-semibold text-center">
@@ -63,7 +63,7 @@ const Home = () => {
                 ))}
               </div>
               <div className="p-4 border-t-2">
-                  <Link href='/createSub'>
+                  <Link href='/create'>
                     <a className="w-full blue button py-2 px-2">
                       Create Community
                     </a>

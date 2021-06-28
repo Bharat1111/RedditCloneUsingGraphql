@@ -9,6 +9,7 @@ const Sub = () => {
   const router = useRouter()
   const subName = router.query.sub as string
   const { data, loading, error } = useGetSubQuery({
+    skip: subName === undefined,
     variables: {
       name: subName
     }
@@ -21,8 +22,9 @@ const Sub = () => {
       <Navbar />
       <div className="pt-12">
         <div className="container flex pt-5">
+          {error && (<small className="text-red-500">{error?.message}</small>) }
           {loading ? <div>Loading...</div> : 
-          !data ? <div>No Posts</div> : (
+          !data?.getSub?.posts ? <div>No Posts</div> : (
             (<>
             <div className="w-160">
               {data.getSub.posts.map(post => (<PostCard key={post.id} post={post} />))}

@@ -32,9 +32,7 @@ const Submit = () => {
                                 body,
                                 sub: sub.getSub.name
                             },
-                            update: (cache) => cache.evict({
-                                fieldName: "getPosts:{}"
-                            })
+                            update: (cache) => cache.evict({ fieldName: "Posts:{}" })
                         })
                         if(!errors) router.push('/')
                     }}>

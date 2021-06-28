@@ -15,13 +15,11 @@ const Navbar = () => {
   const [logout] = useLogoutMutation();
   const apolloClient = useApolloClient();
 
-  const { data: searchData, error } = useSearchSubsQuery({
-    skip: (search.trim() === ''),
+  const { data: searchData } = useSearchSubsQuery({
+    skip: search.length <= 0,
     variables: { name: search },
   });
   console.log('searchData', searchData);
-  if(error)
-  console.log(error.message);
 
   let body = null;
   if (loading) {
@@ -30,10 +28,10 @@ const Navbar = () => {
     body = (
       <div className="flex">
         <Link href="/login">
-          <a className="leading-5 w-32 py-1 mr-4 button hollow blue">log in</a>
+          <a className="hidden sm:block leading-5 w-20 md:w-32 py-1 mr-4 button hollow blue">log in</a>
         </Link>
         <Link href="/register">
-          <a className="leading-5 w-32 py-1 button  blue">sign up</a>
+          <a className="hidden sm:block leading-5 w-20 md:w-32 py-1 button  blue">sign up</a>
         </Link>
       </div>
     );
@@ -41,13 +39,13 @@ const Navbar = () => {
     body = (
       <div className="flex">
         <Link href="/">
-          <a className="leading-5 w-32 py-1 mr-4 button hollow blue">
+          <a className="hidden sm:block leading-5 w-20 md:w-32 py-1 mr-4 button hollow blue">
             {data.me.username}
           </a>
         </Link>
         <Link href="/">
           <a
-            className="leading-5 w-32 py-1 button  blue"
+            className="hidden sm:block leading-5 w-20 md:w-32 py-1 button  blue"
             onClick={async () => {
               await logout();
               await apolloClient.resetStore();
@@ -60,7 +58,7 @@ const Navbar = () => {
     );
   }
   return (
-    <div className="bg-white fixed inset-x-0 top-0 z-10 flex px-5 items-center justify-center h-12">
+    <div className="bg-white fixed inset-x-0 top-0 z-10 flex px-5 items-center justify-between h-12">
       {/* title */}
       {/* <Image src='http://svgshare.com/i/2SL.svg' width='100' height='100' /> */}
       <div className="flex items-center">
@@ -69,14 +67,15 @@ const Navbar = () => {
         </Link>
       </div>
       {/* Search */}
-      <div className="relative flex bg-gray-100 items-center mx-auto border rounded hover:border-blue-500 hover:bg-white">
+      <div className="w-160 px-4 max-w-full">
+      <div className="relative flex bg-gray-100 items-center bg-gray-100 border rounded hover:border-blue-500 hover:bg-white">
         <i className="fas fa-search pl-4 pr-3 text-gray-500"></i>
         <input
           type="text"
-          className="w-160 py-1 pr-3 rounded focus:outline-none"
+          className="py-1 pr-4 bg-gray-100 rounded hover:bg-white focus:outline-none"
           placeholder="Search"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => setSearch((e.target.value.trim()))}
         />
         <div className="absolute left-0 right-0 bg-white" style={{ top: '100%' }}>
           {searchData?.searchSubs.map(sub => (
@@ -91,6 +90,7 @@ const Navbar = () => {
             </div>
           ))}
         </div>
+      </div>
       </div>
       {/* Auth */}
       {body}

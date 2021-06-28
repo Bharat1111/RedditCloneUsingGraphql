@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import classNames from "classnames";
-import { useRegisterMutation } from "../generated/graphql";
+import { MeDocument, MeQuery, useRegisterMutation } from "../generated/graphql";
 
 const Register = () => {
   const [register] = useRegisterMutation()
@@ -21,6 +21,16 @@ const Register = () => {
 
     const response = await register({
       variables: { RegisterInput: input },
+      update: (cache, { data }) => {
+        const {username, id, email, createdAt} = data?.register
+        cache.writeQuery<MeQuery>({
+          query: MeDocument,
+          data: {
+            __typename: "Query",
+            me: {username, email, createdAt,id},
+          },
+        });
+      },
     });
 
     if (response.data?.register.id) {
