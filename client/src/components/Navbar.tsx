@@ -16,7 +16,7 @@ const Navbar = () => {
   const apolloClient = useApolloClient();
 
   const { data: searchData, error } = useSearchSubsQuery({
-    skip: search === '',
+    skip: (search.trim() === ''),
     variables: { name: search },
   });
   console.log('searchData', searchData);
@@ -80,7 +80,7 @@ const Navbar = () => {
         />
         <div className="absolute left-0 right-0 bg-white" style={{ top: '100%' }}>
           {searchData?.searchSubs.map(sub => (
-            <div className="flex items-center px-4 py-3 cursor-pointer hover:bg-gray-200" onClick={() => router.push(`/r/${sub.name}`)}>
+            <div key={sub.name} className="flex items-center px-4 py-3 cursor-pointer hover:bg-gray-200" onClick={() => router.push(`/r/${sub.name}`)}>
               {/* Image */}
               <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y" className='rounded-full h-8 w-8' alt="Image" />
 

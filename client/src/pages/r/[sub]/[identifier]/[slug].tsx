@@ -25,7 +25,7 @@ const Post = () => {
   const { data: medata } = useMeQuery()
   const [createComment] = useCreateCommentMutation();
   const { data, loading, error } = usePostQuery({
-    skip: !identifier && !slug,
+    skip: (identifier==='' || slug===''),
     variables: {
       identifier,
       slug,

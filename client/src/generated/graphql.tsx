@@ -40,7 +40,7 @@ export type Mutation = {
   logout: Scalars['Boolean'];
   createPost: Post;
   createComment?: Maybe<Comment>;
-  createSub?: Maybe<Sub>;
+  createSub?: Maybe<Scalars['Boolean']>;
   addProfilePicture: Scalars['Boolean'];
   vote: Scalars['Boolean'];
 };
@@ -230,6 +230,16 @@ export type CreatePostMutation = (
     { __typename?: 'Post' }
     & Pick<Post, 'id' | 'identifier' | 'slug' | 'subName' | 'username' | 'commentCount' | 'voteScore' | 'createdAt'>
   ) }
+);
+
+export type CreateSubMutationVariables = Exact<{
+  subInput: SubInput;
+}>;
+
+
+export type CreateSubMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'createSub'>
 );
 
 export type LoginMutationVariables = Exact<{
@@ -483,6 +493,37 @@ export function useCreatePostMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreatePostMutationHookResult = ReturnType<typeof useCreatePostMutation>;
 export type CreatePostMutationResult = Apollo.MutationResult<CreatePostMutation>;
 export type CreatePostMutationOptions = Apollo.BaseMutationOptions<CreatePostMutation, CreatePostMutationVariables>;
+export const CreateSubDocument = gql`
+    mutation CreateSub($subInput: SubInput!) {
+  createSub(subInput: $subInput)
+}
+    `;
+export type CreateSubMutationFn = Apollo.MutationFunction<CreateSubMutation, CreateSubMutationVariables>;
+
+/**
+ * __useCreateSubMutation__
+ *
+ * To run a mutation, you first call `useCreateSubMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateSubMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createSubMutation, { data, loading, error }] = useCreateSubMutation({
+ *   variables: {
+ *      subInput: // value for 'subInput'
+ *   },
+ * });
+ */
+export function useCreateSubMutation(baseOptions?: Apollo.MutationHookOptions<CreateSubMutation, CreateSubMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateSubMutation, CreateSubMutationVariables>(CreateSubDocument, options);
+      }
+export type CreateSubMutationHookResult = ReturnType<typeof useCreateSubMutation>;
+export type CreateSubMutationResult = Apollo.MutationResult<CreateSubMutation>;
+export type CreateSubMutationOptions = Apollo.BaseMutationOptions<CreateSubMutation, CreateSubMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($usernameOrEmail: String!, $password: String!) {
   login(usernameOrEmail: $usernameOrEmail, password: $password) {

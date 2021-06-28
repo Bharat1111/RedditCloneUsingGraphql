@@ -29,14 +29,18 @@ class SubInput {
   description: string;
 }
 
+
 @Resolver()
 export class SubPageResolver {
-  @Mutation(() => Sub, { nullable: true })
+  @Mutation(() => Boolean, { nullable: true })
   @UseMiddleware(isAuth)
   async createSub(
     @Arg("subInput") { name, title, description }: SubInput,
     @Ctx() { req }: MyContext
   ) {
+    if(name === "" || title === "") {
+      throw new Error('Name or Title could not be null')
+    }
     const user = await User.findOne(req.session.userId);
 
     const oldsub = await getRepository(Sub)
@@ -47,14 +51,14 @@ export class SubPageResolver {
     if (oldsub) {
       throw new Error("That sub already exists");
     }
-    const sub = await getConnection()
+    await getConnection()
       .createQueryBuilder()
       .insert()
       .into(Sub)
       .values([{ name, description, title, user }])
       .returning("*")
       .execute();
-    return sub.raw[0];
+    return true;
   }
 
   @Query(() => Sub)

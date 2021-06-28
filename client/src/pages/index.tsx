@@ -62,6 +62,13 @@ const Home = () => {
                   </div>
                 ))}
               </div>
+              <div className="p-4 border-t-2">
+                  <Link href='/createSub'>
+                    <a className="w-full blue button py-2 px-2">
+                      Create Community
+                    </a>
+                  </Link>
+              </div>
             </div>
           </div>}
         </div>
