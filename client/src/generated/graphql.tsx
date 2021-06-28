@@ -112,6 +112,7 @@ export type Query = {
   getCounts: CountsResponse;
   getSub: Sub;
   topSubs: Array<Sub>;
+  searchSubs: Array<Sub>;
 };
 
 
@@ -133,6 +134,11 @@ export type QueryGetCountsArgs = {
 
 
 export type QueryGetSubArgs = {
+  name: Scalars['String'];
+};
+
+
+export type QuerySearchSubsArgs = {
   name: Scalars['String'];
 };
 
@@ -366,6 +372,19 @@ export type PostsQuery = (
       { __typename?: 'Vote' }
       & Pick<Vote, 'id' | 'username' | 'postId' | 'value' | 'VoteStatus'>
     )>> }
+  )> }
+);
+
+export type SearchSubsQueryVariables = Exact<{
+  name: Scalars['String'];
+}>;
+
+
+export type SearchSubsQuery = (
+  { __typename?: 'Query' }
+  & { searchSubs: Array<(
+    { __typename?: 'Sub' }
+    & Pick<Sub, 'name' | 'username' | 'title' | 'createdAt'>
   )> }
 );
 
@@ -887,6 +906,44 @@ export function usePostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Post
 export type PostsQueryHookResult = ReturnType<typeof usePostsQuery>;
 export type PostsLazyQueryHookResult = ReturnType<typeof usePostsLazyQuery>;
 export type PostsQueryResult = Apollo.QueryResult<PostsQuery, PostsQueryVariables>;
+export const SearchSubsDocument = gql`
+    query SearchSubs($name: String!) {
+  searchSubs(name: $name) {
+    name
+    username
+    title
+    createdAt
+  }
+}
+    `;
+
+/**
+ * __useSearchSubsQuery__
+ *
+ * To run a query within a React component, call `useSearchSubsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchSubsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchSubsQuery({
+ *   variables: {
+ *      name: // value for 'name'
+ *   },
+ * });
+ */
+export function useSearchSubsQuery(baseOptions: Apollo.QueryHookOptions<SearchSubsQuery, SearchSubsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SearchSubsQuery, SearchSubsQueryVariables>(SearchSubsDocument, options);
+      }
+export function useSearchSubsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchSubsQuery, SearchSubsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchSubsQuery, SearchSubsQueryVariables>(SearchSubsDocument, options);
+        }
+export type SearchSubsQueryHookResult = ReturnType<typeof useSearchSubsQuery>;
+export type SearchSubsLazyQueryHookResult = ReturnType<typeof useSearchSubsLazyQuery>;
+export type SearchSubsQueryResult = Apollo.QueryResult<SearchSubsQuery, SearchSubsQueryVariables>;
 export const TopSubsDocument = gql`
     query TopSubs {
   topSubs {

@@ -114,6 +114,26 @@ export class SubPageResolver {
       // console.log(subs)
       return subs
   }
+
+  @Query(() => [Sub])
+  async searchSubs(
+    @Arg('name') name: string
+  ) {
+    try {
+      if(name === '') {
+        throw new Error('name must not be empty')
+      }
+
+      const subs = await getRepository(Sub)
+        .createQueryBuilder()
+        .where('LOWER(name) LIKE :name', { name: `%${name.toLowerCase().trim()}%` })
+        .getMany()
+
+      return subs
+    } catch (error) {
+      throw new Error('Something went wrong')
+    }
+  }
 }
 
 // const upload = multer({

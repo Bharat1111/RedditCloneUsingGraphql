@@ -1,0 +1,8 @@
+query SearchSubs($name: String!) {
+  searchSubs(name: $name) {
+    name
+    username
+    title
+    createdAt
+  }
+}

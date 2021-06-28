@@ -9,7 +9,6 @@ import {
   usePostQuery,
   useMeQuery,
 } from "../../../../generated/graphql";
-import Sidebar from "../../../../components/Sidebar";
 import UpdootSection from "../../../../components/UpdootSection";
 import Navbar from "../../../../components/Navbar";
 import Buttons from "../../../../components/Buttons";
