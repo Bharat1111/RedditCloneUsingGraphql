@@ -39,7 +39,7 @@ const PostCard = ({ post }) => {
           </p>
         </div>
         <Link href={`/r/${post.subName}/${post.identifier}/${post.slug}`}>
-          <a className="my-1 text-lg font-medium">{post.title}</a>
+          <p className="my-1 text-lg font-medium">{post.title}</p>
         </Link>
         {post.body && <p className="my-1 text-sm">{post.body}</p>}
         <Buttons post={post} />
